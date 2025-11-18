@@ -14,7 +14,142 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      guns: {
+        Row: {
+          brand: string | null
+          condition: string | null
+          created_at: string | null
+          fps: number | null
+          gun_type: string
+          id: string
+          joules: number | null
+          model: string | null
+          name: string
+          notes: string | null
+          purchase_date: string | null
+          purchase_price: number | null
+          serial_number: string | null
+          updated_at: string | null
+          upgrades: string[] | null
+          user_id: string
+        }
+        Insert: {
+          brand?: string | null
+          condition?: string | null
+          created_at?: string | null
+          fps?: number | null
+          gun_type: string
+          id?: string
+          joules?: number | null
+          model?: string | null
+          name: string
+          notes?: string | null
+          purchase_date?: string | null
+          purchase_price?: number | null
+          serial_number?: string | null
+          updated_at?: string | null
+          upgrades?: string[] | null
+          user_id: string
+        }
+        Update: {
+          brand?: string | null
+          condition?: string | null
+          created_at?: string | null
+          fps?: number | null
+          gun_type?: string
+          id?: string
+          joules?: number | null
+          model?: string | null
+          name?: string
+          notes?: string | null
+          purchase_date?: string | null
+          purchase_price?: number | null
+          serial_number?: string | null
+          updated_at?: string | null
+          upgrades?: string[] | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guns_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loadouts: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          gear_items: string[] | null
+          id: string
+          name: string
+          primary_gun_id: string | null
+          secondary_gun_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          gear_items?: string[] | null
+          id?: string
+          name: string
+          primary_gun_id?: string | null
+          secondary_gun_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          gear_items?: string[] | null
+          id?: string
+          name?: string
+          primary_gun_id?: string | null
+          secondary_gun_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loadouts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          display_name: string | null
+          games_played: number | null
+          id: string
+          member_since: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          display_name?: string | null
+          games_played?: number | null
+          id: string
+          member_since?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          display_name?: string | null
+          games_played?: number | null
+          id?: string
+          member_since?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
