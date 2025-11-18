@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Send, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,10 +25,15 @@ interface Message {
 }
 
 const Operator = () => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { getOperatorForContext } = useOperators();
   const armourer = getOperatorForContext("diagnostics");
   const { toast } = useToast();
   const { saveDiagnostic } = useDiagnostics();
+  
+  const gunId = searchParams.get("gunId");
+  const gunName = searchParams.get("gunName");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   const [messages, setMessages] = useState<Message[]>([
@@ -152,12 +158,15 @@ const Operator = () => {
     saveDiagnostic({
       title: saveTitle,
       conversation: messages,
+      gunId: gunId || undefined,
       operatorName: armourer?.name || "The Armourer",
     });
 
     toast({
       title: "Diagnostic Saved",
-      description: "This conversation has been saved to your diagnostics history",
+      description: gunName 
+        ? `This conversation has been saved to ${gunName}`
+        : "This conversation has been saved to your diagnostics history",
     });
 
     setShowSaveDialog(false);

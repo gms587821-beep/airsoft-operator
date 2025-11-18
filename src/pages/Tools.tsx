@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { Calculator, Package, Wrench, AlertCircle } from "lucide-react";
+import { Calculator, Package, Wrench, AlertCircle, Target } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,6 +12,7 @@ import { OperatorDialogue } from "@/components/OperatorDialogue";
 const Tools = () => {
   const { getOperatorForContext } = useOperators();
   const armourer = getOperatorForContext("tools");
+  const navigate = useNavigate();
   
   const [weight, setWeight] = useState("");
   const [fps, setFps] = useState("");
@@ -46,16 +48,19 @@ const Tools = () => {
 
   const toolCards = [
     {
-      icon: Package,
-      title: "Loadout Builder",
-      description: "Build and save your tactical loadouts",
-      badge: "Coming Soon",
+      icon: Target,
+      title: "Gun Arsenal",
+      description: "Manage your loadout with photos, specs, and AI diagnostics",
+      badge: "Active",
+      onClick: () => navigate("/arsenal"),
+      active: true,
     },
     {
       icon: Wrench,
       title: "Maintenance Log",
       description: "Track gun maintenance and upgrades",
       badge: "Coming Soon",
+      active: false,
     },
   ];
 
@@ -148,14 +153,27 @@ const Tools = () => {
           {toolCards.map((tool, index) => (
             <Card
               key={index}
-              className="p-6 bg-card border-border shadow-card opacity-60 cursor-not-allowed"
+              onClick={tool.onClick}
+              className={`p-6 bg-card border-border shadow-card transition-smooth ${
+                tool.active
+                  ? "cursor-pointer hover:border-primary/50 hover:shadow-card-hover"
+                  : "opacity-60 cursor-not-allowed"
+              }`}
             >
               <div className="space-y-4">
                 <div className="flex items-start justify-between">
-                  <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
-                    <tool.icon className="w-5 h-5 text-muted-foreground" />
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                    tool.active ? "bg-primary/20" : "bg-muted"
+                  }`}>
+                    <tool.icon className={`w-5 h-5 ${
+                      tool.active ? "text-primary" : "text-muted-foreground"
+                    }`} />
                   </div>
-                  <span className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground">
+                  <span className={`text-xs px-2 py-1 rounded-full ${
+                    tool.active
+                      ? "bg-primary/20 text-primary"
+                      : "bg-muted text-muted-foreground"
+                  }`}>
                     {tool.badge}
                   </span>
                 </div>
