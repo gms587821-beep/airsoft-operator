@@ -1,0 +1,134 @@
+import { Calculator, Package, Wrench, AlertCircle } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import Navigation from "@/components/Navigation";
+import { useState } from "react";
+
+const Tools = () => {
+  const [weight, setWeight] = useState("");
+  const [fps, setFps] = useState("");
+  const [joules, setJoules] = useState<string | null>(null);
+
+  const calculateJoules = () => {
+    const w = parseFloat(weight);
+    const f = parseFloat(fps);
+    if (w && f) {
+      const j = (0.5 * (w / 1000) * Math.pow(f * 0.3048, 2)).toFixed(2);
+      setJoules(j);
+    }
+  };
+
+  const toolCards = [
+    {
+      icon: Package,
+      title: "Loadout Builder",
+      description: "Build and save your tactical loadouts",
+      badge: "Coming Soon",
+    },
+    {
+      icon: Wrench,
+      title: "Maintenance Log",
+      description: "Track gun maintenance and upgrades",
+      badge: "Coming Soon",
+    },
+  ];
+
+  return (
+    <div className="min-h-screen bg-background pb-20">
+      <div className="container mx-auto px-4 py-6 space-y-6">
+        <h1 className="text-3xl font-bold text-foreground">Player Toolkit</h1>
+
+        {/* FPS/Joule Calculator */}
+        <Card className="p-6 bg-card border-border shadow-card">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
+                <Calculator className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-foreground">FPS/Joule Calculator</h2>
+                <p className="text-sm text-muted-foreground">Calculate energy output of your gear</p>
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="weight">BB Weight (grams)</Label>
+                <Input
+                  id="weight"
+                  type="number"
+                  placeholder="0.20"
+                  value={weight}
+                  onChange={(e) => setWeight(e.target.value)}
+                  className="bg-secondary border-border"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="fps">FPS (Feet Per Second)</Label>
+                <Input
+                  id="fps"
+                  type="number"
+                  placeholder="350"
+                  value={fps}
+                  onChange={(e) => setFps(e.target.value)}
+                  className="bg-secondary border-border"
+                />
+              </div>
+            </div>
+
+            <Button
+              onClick={calculateJoules}
+              className="w-full bg-primary hover:bg-primary/90 transition-smooth"
+            >
+              Calculate
+            </Button>
+
+            {joules && (
+              <Card className="p-4 bg-gradient-tactical border-primary/20">
+                <div className="text-center space-y-2">
+                  <p className="text-sm text-muted-foreground">Energy Output</p>
+                  <p className="text-4xl font-bold text-primary">{joules} J</p>
+                  <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                    <AlertCircle className="w-4 h-4" />
+                    <span>Check your site's FPS limits before play</span>
+                  </div>
+                </div>
+              </Card>
+            )}
+          </div>
+        </Card>
+
+        {/* Other Tools */}
+        <div className="grid md:grid-cols-2 gap-4">
+          {toolCards.map((tool, index) => (
+            <Card
+              key={index}
+              className="p-6 bg-card border-border shadow-card opacity-60 cursor-not-allowed"
+            >
+              <div className="space-y-4">
+                <div className="flex items-start justify-between">
+                  <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
+                    <tool.icon className="w-5 h-5 text-muted-foreground" />
+                  </div>
+                  <span className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground">
+                    {tool.badge}
+                  </span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground">{tool.title}</h3>
+                  <p className="text-sm text-muted-foreground mt-1">{tool.description}</p>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      <Navigation />
+    </div>
+  );
+};
+
+export default Tools;
