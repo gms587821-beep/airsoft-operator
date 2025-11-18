@@ -1,11 +1,13 @@
-import { MessageSquare, TrendingUp, Shield, Zap } from "lucide-react";
+import { MessageSquare, TrendingUp, Shield, Zap, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Navigation from "@/components/Navigation";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 const Index = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const features = [
     {
@@ -50,22 +52,46 @@ const Index = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <Button 
-                size="lg" 
-                className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-tactical font-semibold transition-smooth"
-                onClick={() => navigate('/operator')}
-              >
-                <MessageSquare className="mr-2 h-5 w-5" />
-                Ask The Operator
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="border-primary/50 hover:bg-primary/10 transition-smooth"
-                onClick={() => navigate('/marketplace')}
-              >
-                Explore Marketplace
-              </Button>
+              {user ? (
+                <>
+                  <Button 
+                    size="lg" 
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-tactical font-semibold transition-smooth"
+                    onClick={() => navigate('/operator')}
+                  >
+                    <MessageSquare className="mr-2 h-5 w-5" />
+                    Ask The Operator
+                  </Button>
+                  <Button 
+                    size="lg" 
+                    variant="outline"
+                    className="border-primary/50 hover:bg-primary/10 transition-smooth"
+                    onClick={() => navigate('/marketplace')}
+                  >
+                    Explore Marketplace
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button 
+                    size="lg" 
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-tactical font-semibold transition-smooth"
+                    onClick={() => navigate('/auth')}
+                  >
+                    <LogIn className="mr-2 h-5 w-5" />
+                    Sign In
+                  </Button>
+                  <Button 
+                    size="lg" 
+                    variant="outline"
+                    className="border-primary/50 hover:bg-primary/10 transition-smooth"
+                    onClick={() => navigate('/operator')}
+                  >
+                    <MessageSquare className="mr-2 h-5 w-5" />
+                    Ask The Operator
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>
