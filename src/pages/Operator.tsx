@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Send } from "lucide-react";
+import { Send, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Navigation from "@/components/Navigation";
@@ -7,6 +7,16 @@ import { useOperators } from "@/hooks/useOperators";
 import { OperatorDialogue } from "@/components/OperatorDialogue";
 import { OperatorPortrait } from "@/components/OperatorPortrait";
 import { useToast } from "@/hooks/use-toast";
+import { useDiagnostics } from "@/hooks/useDiagnostics";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 interface Message {
   role: "user" | "operator";
@@ -17,6 +27,7 @@ const Operator = () => {
   const { getOperatorForContext } = useOperators();
   const armourer = getOperatorForContext("diagnostics");
   const { toast } = useToast();
+  const { saveDiagnostic } = useDiagnostics();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   const [messages, setMessages] = useState<Message[]>([
@@ -27,6 +38,8 @@ const Operator = () => {
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [saveTitle, setSaveTitle] = useState("");
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -126,6 +139,31 @@ const Operator = () => {
     }
   };
 
+  const handleSaveConversation = () => {
+    if (!saveTitle.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a title for this diagnostic",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    saveDiagnostic({
+      title: saveTitle,
+      conversation: messages,
+      operatorName: armourer?.name || "The Armourer",
+    });
+
+    toast({
+      title: "Diagnostic Saved",
+      description: "This conversation has been saved to your diagnostics history",
+    });
+
+    setShowSaveDialog(false);
+    setSaveTitle("");
+  };
+
   if (!armourer) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -144,7 +182,7 @@ const Operator = () => {
             accentColor={armourer.accent_color}
             size="md"
           />
-          <div>
+          <div className="flex-1">
             <h1 className="text-xl font-bold text-foreground">{armourer.name}</h1>
             <div className="flex items-center gap-2">
               <div 
@@ -154,6 +192,17 @@ const Operator = () => {
               <span className="text-sm text-muted-foreground">Online</span>
             </div>
           </div>
+          {messages.length > 1 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowSaveDialog(true)}
+              className="gap-2"
+            >
+              <Save className="h-4 w-4" />
+              Save
+            </Button>
+          )}
         </div>
 
         {/* Messages */}
@@ -217,6 +266,34 @@ const Operator = () => {
           </p>
         </div>
       </div>
+
+      <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Save Diagnostic Conversation</DialogTitle>
+            <DialogDescription>
+              Save this diagnostic conversation for future reference in your maintenance history.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="title">Diagnostic Title</Label>
+              <Input
+                id="title"
+                placeholder="e.g., AEG misfeed troubleshooting"
+                value={saveTitle}
+                onChange={(e) => setSaveTitle(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowSaveDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveConversation}>Save Diagnostic</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Navigation />
     </div>

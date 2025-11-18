@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      diagnostic_conversations: {
+        Row: {
+          conversation: Json
+          created_at: string
+          gun_id: string | null
+          id: string
+          operator_name: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          conversation: Json
+          created_at?: string
+          gun_id?: string | null
+          id?: string
+          operator_name?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          conversation?: Json
+          created_at?: string
+          gun_id?: string | null
+          id?: string
+          operator_name?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostic_conversations_gun_id_fkey"
+            columns: ["gun_id"]
+            isOneToOne: false
+            referencedRelation: "guns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       guns: {
         Row: {
           brand: string | null
