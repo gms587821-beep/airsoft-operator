@@ -1,15 +1,21 @@
+import { useState, useEffect } from "react";
 import { Calculator, Package, Wrench, AlertCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import Navigation from "@/components/Navigation";
-import { useState } from "react";
+import { useOperators } from "@/hooks/useOperators";
+import { OperatorDialogue } from "@/components/OperatorDialogue";
 
 const Tools = () => {
+  const { getOperatorForContext } = useOperators();
+  const armourer = getOperatorForContext("tools");
+  
   const [weight, setWeight] = useState("");
   const [fps, setFps] = useState("");
   const [joules, setJoules] = useState<string | null>(null);
+  const [showAdvice, setShowAdvice] = useState(false);
 
   const calculateJoules = () => {
     const w = parseFloat(weight);
@@ -17,7 +23,25 @@ const Tools = () => {
     if (w && f) {
       const j = (0.5 * (w / 1000) * Math.pow(f * 0.3048, 2)).toFixed(2);
       setJoules(j);
+      setShowAdvice(true);
     }
+  };
+
+  useEffect(() => {
+    if (showAdvice) {
+      const timer = setTimeout(() => setShowAdvice(false), 8000);
+      return () => clearTimeout(timer);
+    }
+  }, [showAdvice]);
+
+  const getAdviceMessage = () => {
+    if (!joules) return "";
+    const j = parseFloat(joules);
+    if (j < 1.0) return "Low power. Safe for CQB. Limited range though.";
+    if (j <= 1.3) return "Standard AEG range. Legal for most UK sites. Solid.";
+    if (j <= 1.5) return "Getting hot. Check site limits. Some CQB sites won't allow this.";
+    if (j <= 2.3) return "DMR territory. MEDs apply. Know your rules.";
+    return "Sniper power. Strict MEDs required. Double-check site limits.";
   };
 
   const toolCards = [
@@ -34,6 +58,14 @@ const Tools = () => {
       badge: "Coming Soon",
     },
   ];
+
+  if (!armourer) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-pulse text-muted-foreground">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background pb-20">
@@ -86,16 +118,27 @@ const Tools = () => {
             </Button>
 
             {joules && (
-              <Card className="p-4 bg-gradient-tactical border-primary/20">
-                <div className="text-center space-y-2">
-                  <p className="text-sm text-muted-foreground">Energy Output</p>
-                  <p className="text-4xl font-bold text-primary">{joules} J</p>
-                  <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
-                    <AlertCircle className="w-4 h-4" />
-                    <span>Check your site's FPS limits before play</span>
+              <div className="space-y-4">
+                <Card className="p-4 bg-gradient-tactical border-primary/20">
+                  <div className="text-center space-y-2">
+                    <p className="text-sm text-muted-foreground">Energy Output</p>
+                    <p className="text-4xl font-bold text-primary">{joules} J</p>
+                    <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                      <AlertCircle className="w-4 h-4" />
+                      <span>Check your site's FPS limits before play</span>
+                    </div>
                   </div>
-                </div>
-              </Card>
+                </Card>
+                
+                {showAdvice && (
+                  <OperatorDialogue
+                    message={getAdviceMessage()}
+                    operatorName={armourer.name}
+                    operatorAvatar={armourer.default_avatar || "🔧"}
+                    accentColor={armourer.accent_color}
+                  />
+                )}
+              </div>
             )}
           </div>
         </Card>

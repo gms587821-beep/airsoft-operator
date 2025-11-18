@@ -10,6 +10,7 @@ import Sites from "./pages/Sites";
 import Tools from "./pages/Tools";
 import Profile from "./pages/Profile";
 import Operator from "./pages/Operator";
+import OperatorsPage from "./pages/Operators";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -29,6 +30,7 @@ const App = () => (
             <Route path="/tools" element={<Tools />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/operator" element={<Operator />} />
+            <Route path="/operators" element={<OperatorsPage />} />
             <Route path="/auth" element={<Auth />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

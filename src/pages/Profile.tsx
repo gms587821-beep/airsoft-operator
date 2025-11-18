@@ -70,9 +70,9 @@ const Profile = () => {
   ];
 
   const menuItems = [
-    { icon: User, label: "Edit Profile" },
-    { icon: Shield, label: "Operator Settings" },
-    { icon: Settings, label: "App Settings" },
+    { icon: User, label: "Edit Profile", action: () => {} },
+    { icon: Shield, label: "Operator Settings", action: () => navigate("/operators") },
+    { icon: Settings, label: "App Settings", action: () => {} },
   ];
 
   if (authLoading || loading) {
@@ -138,6 +138,7 @@ const Profile = () => {
             <Card
               key={index}
               className="p-4 bg-card border-border hover:border-primary/30 transition-smooth cursor-pointer group"
+              onClick={item.action}
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-secondary group-hover:bg-primary/20 flex items-center justify-center transition-smooth">

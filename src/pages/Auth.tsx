@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useOperators } from "@/hooks/useOperators";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,12 +9,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Shield, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { OperatorDialogue } from "@/components/OperatorDialogue";
 
 const Auth = () => {
   const { signIn, signUp, user } = useAuth();
+  const { getOperatorForContext } = useOperators();
+  const marshal = getOperatorForContext("onboarding");
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(true);
   
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
@@ -28,6 +32,11 @@ const Auth = () => {
       navigate("/");
     }
   }, [user, navigate]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowWelcome(false), 8000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,9 +68,26 @@ const Auth = () => {
     setLoading(false);
   };
 
+  if (!marshal) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-pulse text-muted-foreground">Loading...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
-      <div className="w-full max-w-md space-y-6">
+      <div className="w-full max-w-2xl space-y-6">
+        {showWelcome && (
+          <OperatorDialogue
+            message="Welcome, Operator. I'm The Marshal. Let's get your HQ set up. Sign in or create your account to proceed."
+            operatorName={marshal.name}
+            operatorAvatar={marshal.default_avatar || "🛡️"}
+            accentColor={marshal.accent_color}
+          />
+        )}
+        
         {/* Header */}
         <div className="text-center space-y-2">
           <div className="flex justify-center mb-4">

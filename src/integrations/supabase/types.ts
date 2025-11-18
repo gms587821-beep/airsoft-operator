@@ -123,8 +123,42 @@ export type Database = {
           },
         ]
       }
+      operators: {
+        Row: {
+          accent_color: string
+          created_at: string | null
+          default_avatar: string | null
+          id: string
+          name: string
+          personality_description: string | null
+          primary_module: string
+          role: string
+        }
+        Insert: {
+          accent_color: string
+          created_at?: string | null
+          default_avatar?: string | null
+          id?: string
+          name: string
+          personality_description?: string | null
+          primary_module: string
+          role: string
+        }
+        Update: {
+          accent_color?: string
+          created_at?: string | null
+          default_avatar?: string | null
+          id?: string
+          name?: string
+          personality_description?: string | null
+          primary_module?: string
+          role?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
+          active_operator_id: string | null
           created_at: string | null
           display_name: string | null
           games_played: number | null
@@ -133,6 +167,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          active_operator_id?: string | null
           created_at?: string | null
           display_name?: string | null
           games_played?: number | null
@@ -141,6 +176,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          active_operator_id?: string | null
           created_at?: string | null
           display_name?: string | null
           games_played?: number | null
@@ -148,7 +184,15 @@ export type Database = {
           member_since?: string | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_active_operator_id_fkey"
+            columns: ["active_operator_id"]
+            isOneToOne: false
+            referencedRelation: "operators"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
