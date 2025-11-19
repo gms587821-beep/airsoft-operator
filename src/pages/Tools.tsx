@@ -60,7 +60,7 @@ const Tools = () => {
       title: "Maintenance Tracking",
       description: "Track service history, part replacements, and scheduled maintenance",
       badge: "Active",
-      onClick: () => navigate("/arsenal"),
+      onClick: () => navigate("/maintenance"),
       active: true,
     },
   ];
