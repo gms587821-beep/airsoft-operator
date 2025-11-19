@@ -57,10 +57,11 @@ const Tools = () => {
     },
     {
       icon: Wrench,
-      title: "Maintenance Log",
-      description: "Track gun maintenance and upgrades",
-      badge: "Coming Soon",
-      active: false,
+      title: "Maintenance Tracking",
+      description: "Track service history, part replacements, and scheduled maintenance",
+      badge: "Active",
+      onClick: () => navigate("/arsenal"),
+      active: true,
     },
   ];
 
