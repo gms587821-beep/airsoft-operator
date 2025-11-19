@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Send, Save } from "lucide-react";
+import { Send, Save, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Navigation from "@/components/Navigation";
@@ -186,6 +186,14 @@ const Operator = () => {
       <div className="container mx-auto px-4 py-6 h-[calc(100vh-5rem)] flex flex-col">
         {/* Header */}
         <div className="flex items-center gap-3 pb-4 border-b border-border">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate(-1)}
+            className="flex-shrink-0"
+          >
+            <X className="h-5 w-5" />
+          </Button>
           <OperatorPortrait
             avatar={armourer.default_avatar || "🔧"}
             accentColor={armourer.accent_color}
