@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          achievement_description: string | null
+          achievement_name: string
+          achievement_type: string
+          created_at: string | null
+          earned_at: string | null
+          icon: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          achievement_description?: string | null
+          achievement_name: string
+          achievement_type: string
+          created_at?: string | null
+          earned_at?: string | null
+          icon?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          achievement_description?: string | null
+          achievement_name?: string
+          achievement_type?: string
+          created_at?: string | null
+          earned_at?: string | null
+          icon?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       diagnostic_conversations: {
         Row: {
           conversation: Json
@@ -60,40 +93,52 @@ export type Database = {
           booking_reference: string | null
           cost: number | null
           created_at: string
+          deaths: number | null
           game_date: string
           id: string
           is_upcoming: boolean
+          kills: number | null
           notes: string | null
+          player_class: string | null
           site_location: string | null
           site_name: string
           updated_at: string
           user_id: string
+          weapon_used: string | null
         }
         Insert: {
           booking_reference?: string | null
           cost?: number | null
           created_at?: string
+          deaths?: number | null
           game_date: string
           id?: string
           is_upcoming?: boolean
+          kills?: number | null
           notes?: string | null
+          player_class?: string | null
           site_location?: string | null
           site_name: string
           updated_at?: string
           user_id: string
+          weapon_used?: string | null
         }
         Update: {
           booking_reference?: string | null
           cost?: number | null
           created_at?: string
+          deaths?: number | null
           game_date?: string
           id?: string
           is_upcoming?: boolean
+          kills?: number | null
           notes?: string | null
+          player_class?: string | null
           site_location?: string | null
           site_name?: string
           updated_at?: string
           user_id?: string
+          weapon_used?: string | null
         }
         Relationships: []
       }
