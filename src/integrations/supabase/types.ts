@@ -55,6 +55,48 @@ export type Database = {
           },
         ]
       }
+      game_sessions: {
+        Row: {
+          booking_reference: string | null
+          cost: number | null
+          created_at: string
+          game_date: string
+          id: string
+          is_upcoming: boolean
+          notes: string | null
+          site_location: string | null
+          site_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          booking_reference?: string | null
+          cost?: number | null
+          created_at?: string
+          game_date: string
+          id?: string
+          is_upcoming?: boolean
+          notes?: string | null
+          site_location?: string | null
+          site_name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          booking_reference?: string | null
+          cost?: number | null
+          created_at?: string
+          game_date?: string
+          id?: string
+          is_upcoming?: boolean
+          notes?: string | null
+          site_location?: string | null
+          site_name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       gun_maintenance: {
         Row: {
           cost: number | null
@@ -175,6 +217,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      kit_items: {
+        Row: {
+          brand: string | null
+          condition: string | null
+          created_at: string
+          id: string
+          item_type: string
+          model: string | null
+          name: string
+          notes: string | null
+          photo_url: string | null
+          purchase_date: string | null
+          purchase_price: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          brand?: string | null
+          condition?: string | null
+          created_at?: string
+          id?: string
+          item_type: string
+          model?: string | null
+          name: string
+          notes?: string | null
+          photo_url?: string | null
+          purchase_date?: string | null
+          purchase_price?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          brand?: string | null
+          condition?: string | null
+          created_at?: string
+          id?: string
+          item_type?: string
+          model?: string | null
+          name?: string
+          notes?: string | null
+          photo_url?: string | null
+          purchase_date?: string | null
+          purchase_price?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       loadouts: {
         Row: {

@@ -16,6 +16,8 @@ import NotFound from "./pages/NotFound";
 import Arsenal from "./pages/Arsenal";
 import GunMaintenance from "./pages/GunMaintenance";
 import MaintenanceDashboard from "./pages/MaintenanceDashboard";
+import KitLog from "./pages/KitLog";
+import PlayerLog from "./pages/PlayerLog";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +39,8 @@ const App = () => (
             <Route path="/arsenal" element={<Arsenal />} />
             <Route path="/arsenal/:gunId/maintenance" element={<GunMaintenance />} />
             <Route path="/maintenance" element={<MaintenanceDashboard />} />
+            <Route path="/kit-log" element={<KitLog />} />
+            <Route path="/player-log" element={<PlayerLog />} />
             <Route path="/auth" element={<Auth />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

@@ -63,6 +63,22 @@ const Tools = () => {
       onClick: () => navigate("/maintenance"),
       active: true,
     },
+    {
+      icon: Package,
+      title: "Kit Log",
+      description: "Track your airsoft gear and equipment inventory",
+      badge: "Active",
+      onClick: () => navigate("/kit-log"),
+      active: true,
+    },
+    {
+      icon: Calculator,
+      title: "Player Log",
+      description: "Record game sessions, bookings, and site visits",
+      badge: "Active",
+      onClick: () => navigate("/player-log"),
+      active: true,
+    },
   ];
 
   if (!armourer) {
