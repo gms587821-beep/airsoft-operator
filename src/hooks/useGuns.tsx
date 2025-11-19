@@ -42,10 +42,11 @@ export const useGuns = () => {
   });
 
   const uploadPhoto = async (file: File): Promise<string> => {
-    if (!user) throw new Error("User not authenticated");
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.user) throw new Error("User not authenticated");
 
     const fileExt = file.name.split('.').pop();
-    const fileName = `${user.id}/${Math.random()}.${fileExt}`;
+    const fileName = `${session.user.id}/${Math.random()}.${fileExt}`;
 
     const { error: uploadError } = await supabase.storage
       .from('gun-photos')
@@ -62,7 +63,8 @@ export const useGuns = () => {
 
   const addGun = useMutation({
     mutationFn: async (gunData: Partial<Gun> & { photo?: File }) => {
-      if (!user) throw new Error("User not authenticated");
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) throw new Error("User not authenticated");
 
       let photoUrl = gunData.photo_url;
       if (gunData.photo) {
@@ -72,7 +74,7 @@ export const useGuns = () => {
       const { photo, ...dataToInsert } = gunData;
       const insertData: any = {
         ...dataToInsert,
-        user_id: user.id,
+        user_id: session.user.id,
       };
       
       if (photoUrl) {
@@ -99,6 +101,9 @@ export const useGuns = () => {
 
   const updateGun = useMutation({
     mutationFn: async ({ id, ...gunData }: Partial<Gun> & { id: string; photo?: File }) => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) throw new Error("User not authenticated");
+
       let photoUrl = gunData.photo_url;
       if (gunData.photo) {
         photoUrl = await uploadPhoto(gunData.photo);
