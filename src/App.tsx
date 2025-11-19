@@ -18,6 +18,7 @@ import GunMaintenance from "./pages/GunMaintenance";
 import MaintenanceDashboard from "./pages/MaintenanceDashboard";
 import KitLog from "./pages/KitLog";
 import PlayerLog from "./pages/PlayerLog";
+import Statistics from "./pages/Statistics";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ const App = () => (
             <Route path="/maintenance" element={<MaintenanceDashboard />} />
             <Route path="/kit-log" element={<KitLog />} />
             <Route path="/player-log" element={<PlayerLog />} />
+            <Route path="/statistics" element={<Statistics />} />
             <Route path="/auth" element={<Auth />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

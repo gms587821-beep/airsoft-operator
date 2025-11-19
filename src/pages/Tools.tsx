@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Calculator, Package, Wrench, AlertCircle, Target } from "lucide-react";
+import { Calculator, Package, Wrench, AlertCircle, Target, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -72,11 +72,19 @@ const Tools = () => {
       active: true,
     },
     {
-      icon: Calculator,
+      icon: MapPin,
       title: "Player Log",
       description: "Record game sessions, bookings, and site visits",
       badge: "Active",
       onClick: () => navigate("/player-log"),
+      active: true,
+    },
+    {
+      icon: Calculator,
+      title: "Statistics",
+      description: "View your stats, achievements, and progress",
+      badge: "New",
+      onClick: () => navigate("/statistics"),
       active: true,
     },
   ];

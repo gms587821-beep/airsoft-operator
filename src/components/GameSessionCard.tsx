@@ -12,6 +12,10 @@ interface GameSession {
   booking_reference: string | null;
   cost: number | null;
   notes: string | null;
+  player_class: string | null;
+  weapon_used: string | null;
+  kills: number | null;
+  deaths: number | null;
 }
 
 interface GameSessionCardProps {
@@ -68,6 +72,33 @@ export const GameSessionCard = ({ session }: GameSessionCardProps) => {
             </div>
           )}
         </div>
+
+        {(session.player_class || session.weapon_used || (session.kills !== null && session.deaths !== null)) && (
+          <div className="grid grid-cols-2 gap-4 text-sm pt-2 border-t border-border">
+            {session.player_class && (
+              <div>
+                <div className="text-muted-foreground text-xs">Class</div>
+                <div className="text-foreground font-medium">{session.player_class}</div>
+              </div>
+            )}
+
+            {session.weapon_used && (
+              <div>
+                <div className="text-muted-foreground text-xs">Weapon</div>
+                <div className="text-foreground font-medium">{session.weapon_used}</div>
+              </div>
+            )}
+
+            {(session.kills !== null && session.deaths !== null) && (
+              <div className="col-span-2">
+                <div className="text-muted-foreground text-xs">K/D Ratio</div>
+                <div className="text-foreground font-medium">
+                  {session.kills}/{session.deaths} ({session.deaths > 0 ? (session.kills / session.deaths).toFixed(2) : session.kills})
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
         {session.notes && (
           <div className="pt-2 border-t border-border">

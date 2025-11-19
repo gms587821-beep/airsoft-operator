@@ -26,6 +26,10 @@ export const GameSessionForm = ({ onClose }: GameSessionFormProps) => {
     booking_reference: "",
     cost: "",
     notes: "",
+    player_class: "",
+    weapon_used: "",
+    kills: "",
+    deaths: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -43,6 +47,10 @@ export const GameSessionForm = ({ onClose }: GameSessionFormProps) => {
         booking_reference: formData.booking_reference || null,
         cost: formData.cost ? parseFloat(formData.cost) : null,
         notes: formData.notes || null,
+        player_class: formData.player_class || null,
+        weapon_used: formData.weapon_used || null,
+        kills: formData.kills ? parseInt(formData.kills) : 0,
+        deaths: formData.deaths ? parseInt(formData.deaths) : 0,
       });
 
       if (error) throw error;
@@ -143,6 +151,50 @@ export const GameSessionForm = ({ onClose }: GameSessionFormProps) => {
               id="is_upcoming"
               checked={formData.is_upcoming}
               onCheckedChange={(checked) => setFormData({ ...formData, is_upcoming: checked })}
+            />
+          </div>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="player_class">Class/Role</Label>
+            <Input
+              id="player_class"
+              value={formData.player_class}
+              onChange={(e) => setFormData({ ...formData, player_class: e.target.value })}
+              placeholder="e.g., Sniper, Assault, Support"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="weapon_used">Weapon Used</Label>
+            <Input
+              id="weapon_used"
+              value={formData.weapon_used}
+              onChange={(e) => setFormData({ ...formData, weapon_used: e.target.value })}
+              placeholder="e.g., M4 Carbine, AK-47"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="kills">Kills</Label>
+            <Input
+              id="kills"
+              type="number"
+              value={formData.kills}
+              onChange={(e) => setFormData({ ...formData, kills: e.target.value })}
+              placeholder="0"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="deaths">Deaths</Label>
+            <Input
+              id="deaths"
+              type="number"
+              value={formData.deaths}
+              onChange={(e) => setFormData({ ...formData, deaths: e.target.value })}
+              placeholder="0"
             />
           </div>
         </div>
