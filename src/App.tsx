@@ -14,6 +14,7 @@ import OperatorsPage from "./pages/Operators";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import Arsenal from "./pages/Arsenal";
+import GunMaintenance from "./pages/GunMaintenance";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/operator" element={<Operator />} />
             <Route path="/operators" element={<OperatorsPage />} />
             <Route path="/arsenal" element={<Arsenal />} />
+            <Route path="/arsenal/:gunId/maintenance" element={<GunMaintenance />} />
             <Route path="/auth" element={<Auth />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

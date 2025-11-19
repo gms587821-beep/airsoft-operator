@@ -83,7 +83,16 @@ export const GunCard = ({ gun, onDelete, onEdit }: GunCardProps) => {
         )}
 
         {/* Actions */}
-        <div className="grid grid-cols-2 gap-2 pt-2">
+        <div className="grid grid-cols-3 gap-2 pt-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate(`/arsenal/${gun.id}/maintenance`)}
+            className="gap-2"
+          >
+            <Wrench className="w-4 h-4" />
+            Service
+          </Button>
           <Button
             variant="outline"
             size="sm"
@@ -99,7 +108,6 @@ export const GunCard = ({ gun, onDelete, onEdit }: GunCardProps) => {
             onClick={() => onEdit(gun)}
             className="gap-2"
           >
-            <Wrench className="w-4 h-4" />
             Edit
           </Button>
         </div>
