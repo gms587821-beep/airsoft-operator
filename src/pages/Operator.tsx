@@ -189,7 +189,7 @@ const Operator = () => {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate('/arsenal')}
             className="flex-shrink-0"
           >
             <X className="h-5 w-5" />
