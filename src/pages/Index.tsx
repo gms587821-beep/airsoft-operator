@@ -14,16 +14,19 @@ const Index = () => {
       icon: Shield,
       title: "AI Tech Support",
       description: "Get instant diagnostics from The Operator for any gear issue",
+      path: "/operator",
     },
     {
       icon: TrendingUp,
       title: "Marketplace",
       description: "Buy, sell, and trade airsoft equipment with verified sellers",
+      path: "/marketplace",
     },
     {
       icon: Zap,
       title: "Player Toolkit",
       description: "FPS calculators, loadout builders, and maintenance tracking",
+      path: "/tools",
     },
   ];
 
@@ -103,6 +106,7 @@ const Index = () => {
           {features.map((feature, index) => (
             <Card 
               key={index}
+              onClick={() => navigate(feature.path)}
               className="p-6 bg-card border-border shadow-card hover:shadow-tactical transition-smooth cursor-pointer group"
             >
               <div className="space-y-4">
