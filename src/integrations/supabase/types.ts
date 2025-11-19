@@ -55,6 +55,59 @@ export type Database = {
           },
         ]
       }
+      gun_maintenance: {
+        Row: {
+          cost: number | null
+          created_at: string
+          description: string | null
+          gun_id: string
+          id: string
+          maintenance_type: Database["public"]["Enums"]["maintenance_type"]
+          next_due_date: string | null
+          parts_replaced: string[] | null
+          performed_at: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cost?: number | null
+          created_at?: string
+          description?: string | null
+          gun_id: string
+          id?: string
+          maintenance_type: Database["public"]["Enums"]["maintenance_type"]
+          next_due_date?: string | null
+          parts_replaced?: string[] | null
+          performed_at?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cost?: number | null
+          created_at?: string
+          description?: string | null
+          gun_id?: string
+          id?: string
+          maintenance_type?: Database["public"]["Enums"]["maintenance_type"]
+          next_due_date?: string | null
+          parts_replaced?: string[] | null
+          performed_at?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gun_maintenance_gun_id_fkey"
+            columns: ["gun_id"]
+            isOneToOne: false
+            referencedRelation: "guns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       guns: {
         Row: {
           brand: string | null
@@ -246,7 +299,14 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      maintenance_type:
+        | "cleaning"
+        | "part_replacement"
+        | "inspection"
+        | "lubrication"
+        | "repair"
+        | "upgrade"
+        | "other"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -373,6 +433,16 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      maintenance_type: [
+        "cleaning",
+        "part_replacement",
+        "inspection",
+        "lubrication",
+        "repair",
+        "upgrade",
+        "other",
+      ],
+    },
   },
 } as const
