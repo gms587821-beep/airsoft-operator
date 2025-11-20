@@ -465,6 +465,68 @@ export type Database = {
         }
         Relationships: []
       }
+      product_catalog: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          photo_url: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          photo_url?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          photo_url?: string | null
+        }
+        Relationships: []
+      }
+      product_suppliers: {
+        Row: {
+          created_at: string
+          id: string
+          price: number
+          product_id: string
+          purchase_link: string | null
+          supplier_name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          price?: number
+          product_id: string
+          purchase_link?: string | null
+          supplier_name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          price?: number
+          product_id?: string
+          purchase_link?: string | null
+          supplier_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_suppliers_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "product_catalog"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           active_operator_id: string | null
