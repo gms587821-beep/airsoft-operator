@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Calculator, Package, Wrench, AlertCircle, Target, MapPin } from "lucide-react";
+import { Calculator, Package, Wrench, AlertCircle, Target, MapPin, ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -53,6 +53,14 @@ const Tools = () => {
       description: "Manage your loadout with photos, specs, and AI diagnostics",
       badge: "Active",
       onClick: () => navigate("/arsenal"),
+      active: true,
+    },
+    {
+      icon: ShoppingCart,
+      title: "Loadout Builder",
+      description: "Build your dream loadout from shops like Patrol Base & BZ",
+      badge: "New",
+      onClick: () => navigate("/loadout-builder"),
       active: true,
     },
     {
