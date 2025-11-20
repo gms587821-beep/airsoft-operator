@@ -11,10 +11,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { X, Plus, Package } from "lucide-react";
+import { X, Plus, Package, ZoomIn } from "lucide-react";
 import { PlannedLoadoutItem } from "@/hooks/usePlannedLoadouts";
 import { useProductCatalog } from "@/hooks/useProductCatalog";
 import { Switch } from "@/components/ui/switch";
+import { ImagePreviewDialog } from "@/components/ImagePreviewDialog";
 
 interface LoadoutItemFormProps {
   onSubmit: (item: Omit<PlannedLoadoutItem, "id" | "created_at">) => void;
@@ -46,6 +47,7 @@ export const LoadoutItemForm = ({
   const [useCatalog, setUseCatalog] = useState(!initialData);
   const [selectedProductId, setSelectedProductId] = useState<string>("");
   const [selectedSupplierId, setSelectedSupplierId] = useState<string>("");
+  const [previewOpen, setPreviewOpen] = useState(false);
   
   const {
     products,
@@ -54,6 +56,8 @@ export const LoadoutItemForm = ({
     categories,
     isLoading,
   } = useProductCatalog();
+
+  const selectedProduct = products.find((p) => p.id === selectedProductId);
 
   const [formData, setFormData] = useState({
     name: initialData?.name || "",
@@ -199,27 +203,59 @@ export const LoadoutItemForm = ({
             )}
 
             {selectedProductId && (
-              <div className="space-y-2">
-                <Label htmlFor="catalog-supplier">Supplier *</Label>
-                <Select
-                  value={selectedSupplierId}
-                  onValueChange={setSelectedSupplierId}
-                  required
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select supplier" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getSuppliersByProduct(selectedProductId).map((supplier) => (
-                      <SelectItem key={supplier.id} value={supplier.id}>
-                        {supplier.supplier_name} - £{supplier.price.toFixed(2)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <>
+                {selectedProduct?.photo_url && (
+                  <div className="space-y-2">
+                    <Label>Product Image</Label>
+                    <div className="relative group">
+                      <img
+                        src={selectedProduct.photo_url}
+                        alt={selectedProduct.name}
+                        className="w-full h-48 object-cover rounded-lg border border-border cursor-pointer transition-transform hover:scale-[1.02]"
+                        onClick={() => setPreviewOpen(true)}
+                      />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center pointer-events-none">
+                        <div className="bg-background/90 px-4 py-2 rounded-full flex items-center gap-2">
+                          <ZoomIn className="w-4 h-4" />
+                          <span className="text-sm font-medium">Click to zoom</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <Label htmlFor="catalog-supplier">Supplier *</Label>
+                  <Select
+                    value={selectedSupplierId}
+                    onValueChange={setSelectedSupplierId}
+                    required
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select supplier" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getSuppliersByProduct(selectedProductId).map((supplier) => (
+                        <SelectItem key={supplier.id} value={supplier.id}>
+                          {supplier.supplier_name} - £{supplier.price.toFixed(2)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </>
             )}
           </>
+        )}
+
+        {selectedProduct && (
+          <ImagePreviewDialog
+            open={previewOpen}
+            onOpenChange={setPreviewOpen}
+            imageUrl={selectedProduct.photo_url || ""}
+            title={selectedProduct.name}
+            description={selectedProduct.description}
+          />
         )}
 
         {(!useCatalog || initialData) && (

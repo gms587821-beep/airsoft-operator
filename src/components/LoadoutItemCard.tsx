@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Edit, ExternalLink, Package } from "lucide-react";
+import { Trash2, Edit, ExternalLink, Package, ZoomIn } from "lucide-react";
 import { PlannedLoadoutItem } from "@/hooks/usePlannedLoadouts";
+import { ImagePreviewDialog } from "@/components/ImagePreviewDialog";
 
 interface LoadoutItemCardProps {
   item: PlannedLoadoutItem;
@@ -15,21 +17,32 @@ export const LoadoutItemCard = ({
   onDelete,
   onEdit,
 }: LoadoutItemCardProps) => {
+  const [previewOpen, setPreviewOpen] = useState(false);
+
   return (
-    <Card className="overflow-hidden hover:border-primary/50 transition-all">
-      <div className="flex flex-col sm:flex-row">
-        {/* Image */}
-        <div className="w-full sm:w-32 h-32 bg-muted flex items-center justify-center overflow-hidden">
-          {item.photo_url ? (
-            <img
-              src={item.photo_url}
-              alt={item.name}
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <Package className="w-12 h-12 text-muted-foreground" />
-          )}
-        </div>
+    <>
+      <Card className="overflow-hidden hover:border-primary/50 transition-all">
+        <div className="flex flex-col sm:flex-row">
+          {/* Image */}
+          <div 
+            className="w-full sm:w-32 h-32 bg-muted flex items-center justify-center overflow-hidden relative group cursor-pointer"
+            onClick={() => item.photo_url && setPreviewOpen(true)}
+          >
+            {item.photo_url ? (
+              <>
+                <img
+                  src={item.photo_url}
+                  alt={item.name}
+                  className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <ZoomIn className="w-6 h-6 text-white" />
+                </div>
+              </>
+            ) : (
+              <Package className="w-12 h-12 text-muted-foreground" />
+            )}
+          </div>
 
         {/* Content */}
         <div className="flex-1 p-4 space-y-3">
@@ -85,8 +98,19 @@ export const LoadoutItemCard = ({
               <Trash2 className="w-3 h-3" />
             </Button>
           </div>
+          </div>
         </div>
-      </div>
-    </Card>
+      </Card>
+
+      {item.photo_url && (
+        <ImagePreviewDialog
+          open={previewOpen}
+          onOpenChange={setPreviewOpen}
+          imageUrl={item.photo_url}
+          title={item.name}
+          description={item.notes}
+        />
+      )}
+    </>
   );
 };
