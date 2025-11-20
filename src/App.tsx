@@ -19,6 +19,8 @@ import MaintenanceDashboard from "./pages/MaintenanceDashboard";
 import KitLog from "./pages/KitLog";
 import PlayerLog from "./pages/PlayerLog";
 import Statistics from "./pages/Statistics";
+import LoadoutBuilder from "./pages/LoadoutBuilder";
+import LoadoutDetail from "./pages/LoadoutDetail";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +45,8 @@ const App = () => (
             <Route path="/kit-log" element={<KitLog />} />
             <Route path="/player-log" element={<PlayerLog />} />
             <Route path="/statistics" element={<Statistics />} />
+            <Route path="/loadout-builder" element={<LoadoutBuilder />} />
+            <Route path="/loadout-builder/:id" element={<LoadoutDetail />} />
             <Route path="/auth" element={<Auth />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />

@@ -388,6 +388,83 @@ export type Database = {
         }
         Relationships: []
       }
+      planned_loadout_items: {
+        Row: {
+          category: string
+          created_at: string
+          id: string
+          loadout_id: string
+          name: string
+          notes: string | null
+          photo_url: string | null
+          price: number
+          purchase_link: string | null
+          retailer_name: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          id?: string
+          loadout_id: string
+          name: string
+          notes?: string | null
+          photo_url?: string | null
+          price?: number
+          purchase_link?: string | null
+          retailer_name: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          id?: string
+          loadout_id?: string
+          name?: string
+          notes?: string | null
+          photo_url?: string | null
+          price?: number
+          purchase_link?: string | null
+          retailer_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "planned_loadout_items_loadout_id_fkey"
+            columns: ["loadout_id"]
+            isOneToOne: false
+            referencedRelation: "planned_loadouts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      planned_loadouts: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          total_cost: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          total_cost?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          total_cost?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           active_operator_id: string | null
