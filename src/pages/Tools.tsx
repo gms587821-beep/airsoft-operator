@@ -123,12 +123,27 @@ const Tools = () => {
               </div>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="weight">BB Weight (grams)</Label>
+                <div className="flex gap-2 mb-2">
+                  {["0.20", "0.25", "0.28", "0.30", "0.32"].map((w) => (
+                    <Button
+                      key={w}
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setWeight(w)}
+                      className={weight === w ? "bg-primary text-primary-foreground" : ""}
+                    >
+                      {w}g
+                    </Button>
+                  ))}
+                </div>
                 <Input
                   id="weight"
                   type="number"
+                  step="0.01"
                   placeholder="0.20"
                   value={weight}
                   onChange={(e) => setWeight(e.target.value)}
