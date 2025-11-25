@@ -28,17 +28,24 @@ export const SitesMap = ({ sites, onSiteClick }: SitesMapProps) => {
         }
       : { lat: 54.5, lng: -3 }; // UK center
  
-  if (!apiKey) {
+  // Don't render map if API key is missing, invalid, or default placeholder
+  if (!apiKey || apiKey === "AIzaSyBbvbkSFBrRQv4sis914G4gdsdrDj-ImAA") {
     return (
       <div className="h-48 bg-secondary border-border rounded-lg flex items-center justify-center">
         <div className="text-center space-y-2 p-4">
           <MapPin className="w-12 h-12 text-muted-foreground mx-auto" />
-          <p className="text-muted-foreground text-sm">
-            Google Maps API key not configured
+          <p className="text-muted-foreground text-sm font-medium">
+            Map Unavailable
           </p>
-          <p className="text-xs text-muted-foreground mt-1">
-            Add your browser API key in <code>src/config/maps.ts</code>.
+          <p className="text-xs text-muted-foreground mt-1 max-w-sm">
+            To enable the interactive map:
           </p>
+          <ol className="text-xs text-muted-foreground text-left mt-2 space-y-1 max-w-sm mx-auto">
+            <li>1. Get a Google Maps API key from <a href="https://console.cloud.google.com/google/maps-apis" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Google Cloud Console</a></li>
+            <li>2. Enable <strong>Maps JavaScript API</strong></li>
+            <li>3. Add your domain to API key restrictions</li>
+            <li>4. Replace the key in <code className="bg-muted px-1 rounded">src/config/maps.ts</code></li>
+          </ol>
         </div>
       </div>
     );
