@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Marketplace from "./pages/Marketplace";
 import Sites from "./pages/Sites";
@@ -12,6 +13,7 @@ import Profile from "./pages/Profile";
 import Operator from "./pages/Operator";
 import OperatorsPage from "./pages/Operators";
 import Auth from "./pages/Auth";
+import Onboarding from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
 import Arsenal from "./pages/Arsenal";
 import GunMaintenance from "./pages/GunMaintenance";
@@ -32,23 +34,28 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/marketplace" element={<Marketplace />} />
-            <Route path="/sites" element={<Sites />} />
-            <Route path="/tools" element={<Tools />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/operator" element={<Operator />} />
-            <Route path="/operators" element={<OperatorsPage />} />
-            <Route path="/arsenal" element={<Arsenal />} />
-            <Route path="/arsenal/:gunId/maintenance" element={<GunMaintenance />} />
-            <Route path="/maintenance" element={<MaintenanceDashboard />} />
-            <Route path="/kit-log" element={<KitLog />} />
-            <Route path="/player-log" element={<PlayerLog />} />
-            <Route path="/statistics" element={<Statistics />} />
-            <Route path="/loadout-builder" element={<LoadoutBuilder />} />
-            <Route path="/loadout-builder/:id" element={<LoadoutDetail />} />
+            {/* Public routes */}
             <Route path="/auth" element={<Auth />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            
+            {/* Protected routes */}
+            <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
+            <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
+            <Route path="/marketplace" element={<ProtectedRoute><Marketplace /></ProtectedRoute>} />
+            <Route path="/sites" element={<ProtectedRoute><Sites /></ProtectedRoute>} />
+            <Route path="/tools" element={<ProtectedRoute><Tools /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="/operator" element={<ProtectedRoute><Operator /></ProtectedRoute>} />
+            <Route path="/operators" element={<ProtectedRoute><OperatorsPage /></ProtectedRoute>} />
+            <Route path="/arsenal" element={<ProtectedRoute><Arsenal /></ProtectedRoute>} />
+            <Route path="/arsenal/:gunId/maintenance" element={<ProtectedRoute><GunMaintenance /></ProtectedRoute>} />
+            <Route path="/maintenance" element={<ProtectedRoute><MaintenanceDashboard /></ProtectedRoute>} />
+            <Route path="/kit-log" element={<ProtectedRoute><KitLog /></ProtectedRoute>} />
+            <Route path="/player-log" element={<ProtectedRoute><PlayerLog /></ProtectedRoute>} />
+            <Route path="/statistics" element={<ProtectedRoute><Statistics /></ProtectedRoute>} />
+            <Route path="/loadout-builder" element={<ProtectedRoute><LoadoutBuilder /></ProtectedRoute>} />
+            <Route path="/loadout-builder/:id" element={<ProtectedRoute><LoadoutDetail /></ProtectedRoute>} />
+            
+            {/* Catch-all route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

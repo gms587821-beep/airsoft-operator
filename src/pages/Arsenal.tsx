@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import Navigation from "@/components/Navigation";
+import { AppLayout } from "@/components/AppLayout";
 import { useGuns, Gun } from "@/hooks/useGuns";
 import { GunCard } from "@/components/GunCard";
 import { GunForm } from "@/components/GunForm";
@@ -41,39 +41,43 @@ const Arsenal = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24">
-      <div className="container mx-auto px-4 py-6 space-y-6">
+    <AppLayout>
+      <div className="space-y-6 py-2">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Gun Arsenal</h1>
-            <p className="text-muted-foreground mt-1">
+        <div className="space-y-2">
+          <h1 className="text-3xl font-bold text-foreground">Arsenal</h1>
+          <p className="text-muted-foreground">
+            Track all your guns, key details and performance here
+          </p>
+          <div className="flex items-center justify-between pt-2">
+            <p className="text-sm text-muted-foreground">
               {guns?.length || 0} {guns?.length === 1 ? 'weapon' : 'weapons'} in your loadout
             </p>
+            <Button
+              onClick={() => setShowForm(true)}
+              className="gap-2 bg-primary hover:bg-primary/90"
+            >
+              <Plus className="w-5 h-5" />
+              Add Gun
+            </Button>
           </div>
-          <Button
-            onClick={() => setShowForm(true)}
-            className="gap-2 bg-primary hover:bg-primary/90"
-          >
-            <Plus className="w-5 h-5" />
-            Add Gun
-          </Button>
         </div>
 
-        {/* Gun Grid */}
+        {/* Gun Grid or Empty State */}
         {!guns || guns.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 space-y-4">
-            <div className="w-24 h-24 rounded-full bg-gradient-tactical flex items-center justify-center">
-              <Plus className="w-12 h-12 text-primary" />
+            <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center">
+              <Target className="w-12 h-12 text-primary" />
             </div>
-            <div className="text-center space-y-2">
-              <h3 className="text-xl font-semibold text-foreground">No guns in arsenal</h3>
-              <p className="text-muted-foreground max-w-md">
-                Start building your loadout by adding your first gun. Track specs, upgrades, and get AI-powered diagnostics.
+            <div className="text-center space-y-2 max-w-md">
+              <h3 className="text-xl font-semibold text-foreground">No Guns in Arsenal</h3>
+              <p className="text-muted-foreground">
+                Start building your loadout by adding your first gun. Track specs, upgrades, maintenance history, and get AI-powered diagnostics from The Armourer.
               </p>
             </div>
             <Button
               onClick={() => setShowForm(true)}
+              size="lg"
               className="gap-2 bg-primary hover:bg-primary/90"
             >
               <Plus className="w-5 h-5" />
@@ -100,9 +104,7 @@ const Arsenal = () => {
         onSubmit={handleSubmit}
         initialData={editingGun}
       />
-
-      <Navigation />
-    </div>
+    </AppLayout>
   );
 };
 

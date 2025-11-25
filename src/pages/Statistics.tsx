@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import Navigation from "@/components/Navigation";
+import { AppLayout } from "@/components/AppLayout";
 import { useAuth } from "@/hooks/useAuth";
 import { useGameSessions } from "@/hooks/useGameSessions";
 import { useMemo } from "react";
@@ -132,34 +132,49 @@ const Statistics = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <div className="container mx-auto px-4 py-6 space-y-6">
+    <AppLayout>
+      <div className="space-y-6 py-2">
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="icon" onClick={() => navigate("/tools")}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
             <h1 className="text-3xl font-bold text-foreground">Player Statistics</h1>
-            <p className="text-sm text-muted-foreground">Your airsoft journey</p>
+            <p className="text-sm text-muted-foreground">Your airsoft journey at a glance</p>
           </div>
         </div>
 
-        {/* Player Level Card */}
-        <Card className="bg-gradient-to-br from-primary/20 to-secondary/20 border-primary/30">
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h2 className="text-2xl font-bold text-foreground">Level {stats.level}</h2>
-                <p className="text-sm text-muted-foreground">Operator Rank</p>
-              </div>
-              <Zap className="h-12 w-12 text-primary" />
+        {stats.totalGames === 0 ? (
+          <Card className="p-12 text-center space-y-4">
+            <Trophy className="w-16 h-16 text-primary/50 mx-auto" />
+            <div>
+              <h3 className="text-xl font-semibold text-foreground mb-2">No Game Data Yet</h3>
+              <p className="text-muted-foreground mb-4 max-w-md mx-auto">
+                Start logging your game sessions to unlock player statistics, achievement tracking, and performance analytics.
+              </p>
+              <Button onClick={() => navigate("/player-log")} size="lg">
+                Log Your First Game
+              </Button>
             </div>
-            <Progress value={stats.levelProgress} className="h-3" />
-            <p className="text-xs text-muted-foreground mt-2">
-              {10 - (stats.totalGames % 10)} games until level {stats.level + 1}
-            </p>
-          </CardContent>
-        </Card>
+          </Card>
+        ) : (
+          <>
+            {/* Player Level Card */}
+            <Card className="bg-gradient-to-br from-primary/20 to-secondary/20 border-primary/30">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h2 className="text-2xl font-bold text-foreground">Level {stats.level}</h2>
+                    <p className="text-sm text-muted-foreground">Operator Rank</p>
+                  </div>
+                  <Zap className="h-12 w-12 text-primary" />
+                </div>
+                <Progress value={stats.levelProgress} className="h-3" />
+                <p className="text-xs text-muted-foreground mt-2">
+                  {10 - (stats.totalGames % 10)} games until level {stats.level + 1}
+                </p>
+              </CardContent>
+            </Card>
 
         {/* Key Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -269,40 +284,41 @@ const Statistics = () => {
           </Card>
         )}
 
-        {/* Achievements */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Achievements</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {achievements.map((achievement) => (
-                <div
-                  key={achievement.id}
-                  className={`p-4 rounded-lg border ${
-                    achievement.earned 
-                      ? "bg-primary/10 border-primary/30" 
-                      : "bg-muted/20 border-border opacity-50"
-                  }`}
-                >
-                  <div className="flex items-start gap-3">
-                    <span className="text-2xl">{achievement.icon}</span>
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-foreground">{achievement.name}</h4>
-                      <p className="text-xs text-muted-foreground">{achievement.description}</p>
-                      {achievement.earned && (
-                        <Badge variant="secondary" className="mt-2">Unlocked</Badge>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+         {/* Achievements */}
+         <Card>
+           <CardHeader>
+             <CardTitle>Achievements</CardTitle>
+           </CardHeader>
+           <CardContent>
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+               {achievements.map((achievement) => (
+                 <div
+                   key={achievement.id}
+                   className={`p-4 rounded-lg border ${
+                     achievement.earned 
+                       ? "bg-primary/10 border-primary/30" 
+                       : "bg-muted/20 border-border opacity-50"
+                   }`}
+                 >
+                   <div className="flex items-start gap-3">
+                     <span className="text-2xl">{achievement.icon}</span>
+                     <div className="flex-1">
+                       <h4 className="font-semibold text-foreground">{achievement.name}</h4>
+                       <p className="text-xs text-muted-foreground">{achievement.description}</p>
+                       {achievement.earned && (
+                         <Badge variant="secondary" className="mt-2">Unlocked</Badge>
+                       )}
+                     </div>
+                   </div>
+                 </div>
+               ))}
+             </div>
+           </CardContent>
+         </Card>
+          </>
+        )}
       </div>
-      <Navigation />
-    </div>
+    </AppLayout>
   );
 };
 

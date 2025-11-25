@@ -1,13 +1,41 @@
-import { MessageSquare, TrendingUp, Shield, Zap, LogIn } from "lucide-react";
+import { useEffect } from "react";
+import { MessageSquare, TrendingUp, Shield, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import Navigation from "@/components/Navigation";
+import { AppLayout } from "@/components/AppLayout";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  useEffect(() => {
+    // Check if onboarding is needed
+    const checkOnboarding = async () => {
+      if (!user) return;
+
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("active_operator_id")
+        .eq("id", user.id)
+        .single();
+
+      const { data: guns } = await supabase
+        .from("guns")
+        .select("id")
+        .eq("user_id", user.id)
+        .limit(1);
+
+      // If no operator or no guns, redirect to onboarding
+      if (!profile?.active_operator_id || !guns || guns.length === 0) {
+        navigate("/onboarding");
+      }
+    };
+
+    checkOnboarding();
+  }, [user, navigate]);
 
   const features = [
     {
@@ -31,13 +59,13 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <AppLayout>
       {/* Hero Section */}
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden -mx-4 px-4">
         <div className="absolute inset-0 bg-gradient-hero" />
         <div className="absolute inset-0 bg-gradient-tactical opacity-50" />
         
-        <div className="relative container mx-auto px-4 pt-12 pb-16">
+        <div className="relative pt-8 pb-12">
           <div className="text-center space-y-6 max-w-3xl mx-auto">
             {/* The Operator Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card/50 backdrop-blur border border-primary/20">
@@ -55,53 +83,29 @@ const Index = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              {user ? (
-                <>
-                  <Button 
-                    size="lg" 
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-tactical font-semibold transition-smooth"
-                    onClick={() => navigate('/operator')}
-                  >
-                    <MessageSquare className="mr-2 h-5 w-5" />
-                    Ask The Operator
-                  </Button>
-                  <Button 
-                    size="lg" 
-                    variant="outline"
-                    className="border-primary/50 hover:bg-primary/10 transition-smooth"
-                    onClick={() => navigate('/marketplace')}
-                  >
-                    Explore Marketplace
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Button 
-                    size="lg" 
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-tactical font-semibold transition-smooth"
-                    onClick={() => navigate('/auth')}
-                  >
-                    <LogIn className="mr-2 h-5 w-5" />
-                    Sign In
-                  </Button>
-                  <Button 
-                    size="lg" 
-                    variant="outline"
-                    className="border-primary/50 hover:bg-primary/10 transition-smooth"
-                    onClick={() => navigate('/operator')}
-                  >
-                    <MessageSquare className="mr-2 h-5 w-5" />
-                    Ask The Operator
-                  </Button>
-                </>
-              )}
+              <Button 
+                size="lg" 
+                className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-tactical font-semibold transition-smooth"
+                onClick={() => navigate('/operator')}
+              >
+                <MessageSquare className="mr-2 h-5 w-5" />
+                Ask The Operator
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline"
+                className="border-primary/50 hover:bg-primary/10 transition-smooth"
+                onClick={() => navigate('/marketplace')}
+              >
+                Explore Marketplace
+              </Button>
             </div>
           </div>
         </div>
       </section>
 
       {/* Features Grid */}
-      <section className="container mx-auto px-4 py-12">
+      <section className="py-8">
         <div className="grid md:grid-cols-3 gap-6">
           {features.map((feature, index) => (
             <Card 
@@ -126,7 +130,7 @@ const Index = () => {
       </section>
 
       {/* The Operator Section */}
-      <section className="container mx-auto px-4 py-12">
+      <section className="py-8">
         <Card className="p-8 bg-gradient-tactical border-primary/20 shadow-glow">
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div className="space-y-4">
@@ -165,9 +169,7 @@ const Index = () => {
           </div>
         </Card>
       </section>
-
-      <Navigation />
-    </div>
+    </AppLayout>
   );
 };
 

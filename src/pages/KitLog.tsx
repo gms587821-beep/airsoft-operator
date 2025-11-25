@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Plus, ArrowLeft, Package2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import Navigation from "@/components/Navigation";
+import { AppLayout } from "@/components/AppLayout";
 import { useAuth } from "@/hooks/useAuth";
 import { KitCard } from "@/components/KitCard";
 import { KitForm } from "@/components/KitForm";
@@ -36,8 +36,8 @@ const KitLog = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <div className="container mx-auto px-4 py-6 space-y-6">
+    <AppLayout>
+      <div className="space-y-6 py-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button
@@ -49,12 +49,12 @@ const KitLog = () => {
             </Button>
             <div>
               <h1 className="text-3xl font-bold text-foreground">Kit Log</h1>
-              <p className="text-sm text-muted-foreground">Track your airsoft gear and equipment</p>
+              <p className="text-sm text-muted-foreground">Track your tactical gear and equipment</p>
             </div>
           </div>
           <Button onClick={() => setShowForm(true)} className="gap-2">
             <Plus className="h-4 w-4" />
-            Add Kit Item
+            Add Kit
           </Button>
         </div>
 
@@ -64,15 +64,15 @@ const KitLog = () => {
 
         {kitItems.length === 0 ? (
           <Card className="p-12 text-center space-y-4">
-            <Package2 className="w-16 h-16 text-muted-foreground mx-auto" />
+            <Package2 className="w-16 h-16 text-primary/50 mx-auto" />
             <div>
               <h3 className="text-xl font-semibold text-foreground mb-2">No Kit Items Yet</h3>
-              <p className="text-muted-foreground mb-4">
-                Start building your gear collection by adding your first kit item
+              <p className="text-muted-foreground mb-4 max-w-md mx-auto">
+                Start building your gear collection. Track vests, helmets, pouches, and all your tactical equipment.
               </p>
-              <Button onClick={() => setShowForm(true)} className="gap-2">
+              <Button onClick={() => setShowForm(true)} size="lg" className="gap-2">
                 <Plus className="h-4 w-4" />
-                Add Your First Kit Item
+                Add Your First Item
               </Button>
             </div>
           </Card>
@@ -84,8 +84,7 @@ const KitLog = () => {
           </div>
         )}
       </div>
-      <Navigation />
-    </div>
+    </AppLayout>
   );
 };
 
