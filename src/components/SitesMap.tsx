@@ -1,21 +1,18 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { MapPin } from "lucide-react";
 import { Site } from "@/hooks/useSites";
-import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
-// Fix for default marker icons in Leaflet
-import icon from "leaflet/dist/images/marker-icon.png";
-import iconShadow from "leaflet/dist/images/marker-shadow.png";
+// Import Leaflet CSS
+import "leaflet/dist/leaflet.css";
 
-let DefaultIcon = L.icon({
-  iconUrl: icon,
-  shadowUrl: iconShadow,
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
+// Fix for default marker icons in Leaflet with Vite
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
 });
-
-L.Marker.prototype.options.icon = DefaultIcon;
 
 interface SitesMapProps {
   sites: Site[];
@@ -57,14 +54,12 @@ export const SitesMap = ({ sites, onSiteClick }: SitesMapProps) => {
   return (
     <div className="h-96 rounded-lg overflow-hidden border border-border shadow-tactical">
       <MapContainer
-        // @ts-ignore - react-leaflet types issue
         center={[centerLat, centerLng]}
         zoom={zoomLevel}
         style={{ height: "100%", width: "100%" }}
         scrollWheelZoom={true}
       >
         <TileLayer
-          // @ts-ignore - react-leaflet types issue
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
