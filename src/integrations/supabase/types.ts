@@ -100,6 +100,7 @@ export type Database = {
           kills: number | null
           notes: string | null
           player_class: string | null
+          site_id: string | null
           site_location: string | null
           site_name: string
           updated_at: string
@@ -117,6 +118,7 @@ export type Database = {
           kills?: number | null
           notes?: string | null
           player_class?: string | null
+          site_id?: string | null
           site_location?: string | null
           site_name: string
           updated_at?: string
@@ -134,6 +136,7 @@ export type Database = {
           kills?: number | null
           notes?: string | null
           player_class?: string | null
+          site_id?: string | null
           site_location?: string | null
           site_name?: string
           updated_at?: string
@@ -355,6 +358,57 @@ export type Database = {
           },
         ]
       }
+      marketplace_listings: {
+        Row: {
+          category: string
+          condition: string
+          created_at: string
+          currency: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          linked_gun_id: string | null
+          location: string | null
+          price: number
+          seller_user_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          condition: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          linked_gun_id?: string | null
+          location?: string | null
+          price?: number
+          seller_user_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          condition?: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          linked_gun_id?: string | null
+          location?: string | null
+          price?: number
+          seller_user_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       operators: {
         Row: {
           accent_color: string
@@ -527,6 +581,57 @@ export type Database = {
           },
         ]
       }
+      products: {
+        Row: {
+          affiliate_url: string | null
+          brand: string | null
+          category: string
+          created_at: string
+          currency: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_affiliate: boolean
+          name: string
+          price: number
+          role: string | null
+          tags: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          affiliate_url?: string | null
+          brand?: string | null
+          category: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_affiliate?: boolean
+          name: string
+          price?: number
+          role?: string | null
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          affiliate_url?: string | null
+          brand?: string | null
+          category?: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_affiliate?: boolean
+          name?: string
+          price?: number
+          role?: string | null
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           active_operator_id: string | null
@@ -564,6 +669,123 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      site_favourites: {
+        Row: {
+          created_at: string
+          id: string
+          site_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          site_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          site_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      site_ratings: {
+        Row: {
+          comment: string | null
+          created_at: string
+          gameplay_rating: number
+          id: string
+          marshal_rating: number
+          overall_rating: number
+          safety_rating: number
+          site_id: string
+          user_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          gameplay_rating: number
+          id?: string
+          marshal_rating: number
+          overall_rating: number
+          safety_rating: number
+          site_id: string
+          user_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          gameplay_rating?: number
+          id?: string
+          marshal_rating?: number
+          overall_rating?: number
+          safety_rating?: number
+          site_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      sites: {
+        Row: {
+          booking_url: string | null
+          chrono_rules: string | null
+          city: string | null
+          country: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          field_type: string
+          id: string
+          is_user_created: boolean
+          latitude: number | null
+          longitude: number | null
+          name: string
+          region: string | null
+          thumbnail_url: string | null
+          updated_at: string
+          website_url: string | null
+        }
+        Insert: {
+          booking_url?: string | null
+          chrono_rules?: string | null
+          city?: string | null
+          country: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          field_type: string
+          id?: string
+          is_user_created?: boolean
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          region?: string | null
+          thumbnail_url?: string | null
+          updated_at?: string
+          website_url?: string | null
+        }
+        Update: {
+          booking_url?: string | null
+          chrono_rules?: string | null
+          city?: string | null
+          country?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          field_type?: string
+          id?: string
+          is_user_created?: boolean
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          region?: string | null
+          thumbnail_url?: string | null
+          updated_at?: string
+          website_url?: string | null
+        }
+        Relationships: []
       }
     }
     Views: {
