@@ -1,8 +1,21 @@
-import { APIProvider, Map, AdvancedMarker, InfoWindow } from "@vis.gl/react-google-maps";
-import { useState } from "react";
-import { MapPin, Navigation } from "lucide-react";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapPin } from "lucide-react";
 import { Site } from "@/hooks/useSites";
-import { GOOGLE_MAPS_API_KEY } from "@/config/maps";
+import "leaflet/dist/leaflet.css";
+import L from "leaflet";
+
+// Fix for default marker icons in Leaflet
+import icon from "leaflet/dist/images/marker-icon.png";
+import iconShadow from "leaflet/dist/images/marker-shadow.png";
+
+let DefaultIcon = L.icon({
+  iconUrl: icon,
+  shadowUrl: iconShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
 
 interface SitesMapProps {
   sites: Site[];
@@ -10,46 +23,23 @@ interface SitesMapProps {
 }
 
 export const SitesMap = ({ sites, onSiteClick }: SitesMapProps) => {
-  const [selectedSite, setSelectedSite] = useState<Site | null>(null);
-
-  const apiKey = GOOGLE_MAPS_API_KEY;
- 
   // Filter sites that have coordinates
   const sitesWithCoords = sites.filter(
     (site) => site.latitude && site.longitude
   );
- 
+
   // Calculate center based on sites or default to UK
-  const center =
+  const centerLat =
     sitesWithCoords.length > 0
-      ? {
-          lat: sitesWithCoords.reduce((sum, site) => sum + Number(site.latitude), 0) / sitesWithCoords.length,
-          lng: sitesWithCoords.reduce((sum, site) => sum + Number(site.longitude), 0) / sitesWithCoords.length,
-        }
-      : { lat: 54.5, lng: -3 }; // UK center
- 
-  // Don't render map if API key is missing, invalid, or default placeholder
-  if (!apiKey || apiKey === "AIzaSyBbvbkSFBrRQv4sis914G4gdsdrDj-ImAA") {
-    return (
-      <div className="h-48 bg-secondary border-border rounded-lg flex items-center justify-center">
-        <div className="text-center space-y-2 p-4">
-          <MapPin className="w-12 h-12 text-muted-foreground mx-auto" />
-          <p className="text-muted-foreground text-sm font-medium">
-            Map Unavailable
-          </p>
-          <p className="text-xs text-muted-foreground mt-1 max-w-sm">
-            To enable the interactive map:
-          </p>
-          <ol className="text-xs text-muted-foreground text-left mt-2 space-y-1 max-w-sm mx-auto">
-            <li>1. Get a Google Maps API key from <a href="https://console.cloud.google.com/google/maps-apis" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Google Cloud Console</a></li>
-            <li>2. Enable <strong>Maps JavaScript API</strong></li>
-            <li>3. Add your domain to API key restrictions</li>
-            <li>4. Replace the key in <code className="bg-muted px-1 rounded">src/config/maps.ts</code></li>
-          </ol>
-        </div>
-      </div>
-    );
-  }
+      ? sitesWithCoords.reduce((sum, site) => sum + Number(site.latitude), 0) /
+        sitesWithCoords.length
+      : 54.5;
+
+  const centerLng =
+    sitesWithCoords.length > 0
+      ? sitesWithCoords.reduce((sum, site) => sum + Number(site.longitude), 0) /
+        sitesWithCoords.length
+      : -3;
 
   if (sitesWithCoords.length === 0) {
     return (
@@ -62,63 +52,51 @@ export const SitesMap = ({ sites, onSiteClick }: SitesMapProps) => {
     );
   }
 
-  return (
-    <APIProvider apiKey={apiKey}>
-      <div className="h-96 rounded-lg overflow-hidden border border-border shadow-tactical">
-        <Map
-          mapId="airsoft-sites-map"
-          defaultCenter={center}
-          defaultZoom={sitesWithCoords.length === 1 ? 12 : 6}
-          gestureHandling="greedy"
-          disableDefaultUI={false}
-          className="w-full h-full"
-        >
-          {sitesWithCoords.map((site) => (
-            <AdvancedMarker
-              key={site.id}
-              position={{
-                lat: Number(site.latitude),
-                lng: Number(site.longitude),
-              }}
-              onClick={() => setSelectedSite(site)}
-            >
-              <div className="bg-primary text-primary-foreground rounded-full p-2 shadow-lg cursor-pointer hover:scale-110 transition-transform">
-                <Navigation className="w-4 h-4 fill-current" />
-              </div>
-            </AdvancedMarker>
-          ))}
+  const zoomLevel = sitesWithCoords.length === 1 ? 12 : 6;
 
-          {selectedSite && (
-            <InfoWindow
-              position={{
-                lat: Number(selectedSite.latitude),
-                lng: Number(selectedSite.longitude),
-              }}
-              onCloseClick={() => setSelectedSite(null)}
-            >
+  return (
+    <div className="h-96 rounded-lg overflow-hidden border border-border shadow-tactical">
+      <MapContainer
+        // @ts-ignore - react-leaflet types issue
+        center={[centerLat, centerLng]}
+        zoom={zoomLevel}
+        style={{ height: "100%", width: "100%" }}
+        scrollWheelZoom={true}
+      >
+        <TileLayer
+          // @ts-ignore - react-leaflet types issue
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        {sitesWithCoords.map((site) => (
+          <Marker
+            key={site.id}
+            position={[Number(site.latitude), Number(site.longitude)]}
+          >
+            <Popup>
               <div className="p-2 min-w-[200px]">
-                <h3 className="font-semibold text-sm mb-1">{selectedSite.name}</h3>
+                <h3 className="font-semibold text-sm mb-1">{site.name}</h3>
                 <p className="text-xs text-muted-foreground mb-2">
-                  {[selectedSite.city, selectedSite.region, selectedSite.country]
+                  {[site.city, site.region, site.country]
                     .filter(Boolean)
                     .join(", ")}
                 </p>
                 <p className="text-xs">
-                  <span className="font-medium">Type:</span> {selectedSite.field_type}
+                  <span className="font-medium">Type:</span> {site.field_type}
                 </p>
                 {onSiteClick && (
                   <button
-                    onClick={() => onSiteClick(selectedSite.id)}
+                    onClick={() => onSiteClick(site.id)}
                     className="mt-2 text-xs text-primary hover:underline"
                   >
                     View Details
                   </button>
                 )}
               </div>
-            </InfoWindow>
-          )}
-        </Map>
-      </div>
-    </APIProvider>
+            </Popup>
+          </Marker>
+        ))}
+      </MapContainer>
+    </div>
   );
 };
