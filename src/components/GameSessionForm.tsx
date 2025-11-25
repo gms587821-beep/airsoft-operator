@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { X, MapPin } from "lucide-react";
+import { useState, useEffect } from "react";
+import { X, MapPin, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,20 @@ import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useSites } from "@/hooks/useSites";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface GameSessionFormProps {
   onClose: () => void;
@@ -17,7 +31,10 @@ interface GameSessionFormProps {
 export const GameSessionForm = ({ onClose }: GameSessionFormProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { data: sites = [] } = useSites();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [siteSearchOpen, setSiteSearchOpen] = useState(false);
+  const [selectedSiteId, setSelectedSiteId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     site_name: "",
     site_location: "",
@@ -32,6 +49,20 @@ export const GameSessionForm = ({ onClose }: GameSessionFormProps) => {
     deaths: "",
   });
 
+  // Auto-populate location when site is selected
+  useEffect(() => {
+    if (selectedSiteId) {
+      const site = sites.find(s => s.id === selectedSiteId);
+      if (site) {
+        setFormData(prev => ({
+          ...prev,
+          site_name: site.name,
+          site_location: [site.city, site.region, site.country].filter(Boolean).join(", "),
+        }));
+      }
+    }
+  }, [selectedSiteId, sites]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
@@ -40,6 +71,7 @@ export const GameSessionForm = ({ onClose }: GameSessionFormProps) => {
     try {
       const { error } = await supabase.from("game_sessions").insert({
         user_id: user.id,
+        site_id: selectedSiteId || null,
         site_name: formData.site_name,
         site_location: formData.site_location || null,
         game_date: formData.game_date,
@@ -86,24 +118,89 @@ export const GameSessionForm = ({ onClose }: GameSessionFormProps) => {
         </div>
 
         <div className="grid md:grid-cols-2 gap-4">
-          <div className="space-y-2">
+          <div className="space-y-2 col-span-2">
             <Label htmlFor="site_name">Site Name *</Label>
-            <Input
-              id="site_name"
-              required
-              value={formData.site_name}
-              onChange={(e) => setFormData({ ...formData, site_name: e.target.value })}
-              placeholder="e.g., Combat South"
-            />
+            <Popover open={siteSearchOpen} onOpenChange={setSiteSearchOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  role="combobox"
+                  aria-expanded={siteSearchOpen}
+                  className="w-full justify-between"
+                >
+                  {formData.site_name || "Select a site or enter custom name..."}
+                  <Search className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-full p-0" align="start">
+                <Command>
+                  <CommandInput 
+                    placeholder="Search sites..." 
+                    onValueChange={(value) => {
+                      if (value && !sites.some(s => s.name === value)) {
+                        setFormData({ ...formData, site_name: value });
+                      }
+                    }}
+                  />
+                  <CommandList>
+                    <CommandEmpty>
+                      <div className="p-2 text-sm">
+                        <p className="text-muted-foreground mb-2">No site found.</p>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => {
+                            setSiteSearchOpen(false);
+                            setSelectedSiteId(null);
+                          }}
+                        >
+                          Use Custom Name
+                        </Button>
+                      </div>
+                    </CommandEmpty>
+                    <CommandGroup>
+                      {sites.map((site) => (
+                        <CommandItem
+                          key={site.id}
+                          value={site.name}
+                          onSelect={() => {
+                            setSelectedSiteId(site.id);
+                            setSiteSearchOpen(false);
+                          }}
+                        >
+                          <div className="flex flex-col">
+                            <span className="font-medium">{site.name}</span>
+                            <span className="text-xs text-muted-foreground">
+                              {[site.city, site.region, site.country].filter(Boolean).join(", ")}
+                            </span>
+                          </div>
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </CommandList>
+                </Command>
+              </PopoverContent>
+            </Popover>
+            {!selectedSiteId && (
+              <Input
+                id="site_name"
+                required
+                value={formData.site_name}
+                onChange={(e) => setFormData({ ...formData, site_name: e.target.value })}
+                placeholder="Or type a custom site name..."
+                className="mt-2"
+              />
+            )}
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2 col-span-2">
             <Label htmlFor="site_location">Location</Label>
             <Input
               id="site_location"
               value={formData.site_location}
               onChange={(e) => setFormData({ ...formData, site_location: e.target.value })}
               placeholder="e.g., Kent, UK"
+              disabled={!!selectedSiteId}
             />
           </div>
 

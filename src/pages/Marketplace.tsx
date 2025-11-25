@@ -17,6 +17,7 @@ import { AppLayout } from "@/components/AppLayout";
 import { useMarketplaceProducts } from "@/hooks/useMarketplaceProducts";
 import { useMarketplaceListings } from "@/hooks/useMarketplaceListings";
 import { Skeleton } from "@/components/ui/skeleton";
+import { MarketplaceFilters } from "@/components/MarketplaceFilters";
 
 const CATEGORIES = ["All", "Rifle", "Pistol", "SMG", "Shotgun", "Sniper", "Support", "Gear", "Upgrade", "Accessory"];
 
@@ -25,6 +26,12 @@ const Marketplace = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState<string>("All");
   const [activeTab, setActiveTab] = useState<"all" | "curated" | "listings" | "my-listings">("all");
+  const [advancedFilters, setAdvancedFilters] = useState<{
+    minPrice?: number;
+    maxPrice?: number;
+    condition?: string;
+    location?: string;
+  }>({});
 
   const {
     data: products = [],
@@ -41,6 +48,7 @@ const Marketplace = () => {
     category: category === "All" ? undefined : category,
     searchTerm: searchTerm || undefined,
     myListingsOnly: activeTab === "my-listings",
+    ...advancedFilters,
   });
 
   const isLoading = productsLoading || listingsLoading;
@@ -62,28 +70,32 @@ const Marketplace = () => {
         </div>
 
         {/* Search and Filters */}
-        <div className="flex gap-3">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search equipment..."
-              className="pl-10"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+        <div className="space-y-3">
+          <div className="flex gap-3">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search equipment..."
+                className="pl-10"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <Select value={category} onValueChange={setCategory}>
+              <SelectTrigger className="w-[140px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {CATEGORIES.map((cat) => (
+                  <SelectItem key={cat} value={cat}>
+                    {cat}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-          <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger className="w-[140px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {CATEGORIES.map((cat) => (
-                <SelectItem key={cat} value={cat}>
-                  {cat}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          
+          <MarketplaceFilters onFiltersChange={setAdvancedFilters} />
         </div>
 
         {/* Tabs */}

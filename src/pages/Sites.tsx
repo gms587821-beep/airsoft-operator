@@ -19,6 +19,7 @@ import { useSites } from "@/hooks/useSites";
 import { useIsSiteFavourite, useToggleSiteFavourite } from "@/hooks/useSiteFavourites";
 import { useSiteRatingStats } from "@/hooks/useSiteRatings";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SitesMap } from "@/components/SitesMap";
 
 const FIELD_TYPES = ["All", "CQB", "Woodland", "Indoor", "Mixed", "Milsim"];
 
@@ -148,13 +149,8 @@ const Sites = () => {
           </div>
         </div>
 
-        {/* Map Placeholder */}
-        <Card className="h-48 bg-secondary border-border flex items-center justify-center">
-          <div className="text-center space-y-2">
-            <MapPin className="w-12 h-12 text-muted-foreground mx-auto" />
-            <p className="text-muted-foreground">Interactive map coming soon</p>
-          </div>
-        </Card>
+        {/* Interactive Map */}
+        <SitesMap sites={sites} onSiteClick={(siteId) => navigate(`/sites/${siteId}`)} />
 
         {/* Sites List */}
         <div className="space-y-4">
