@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useAuth } from "@/hooks/useAuth";
 import { useOperators } from "@/hooks/useOperators";
+import { useGuns } from "@/hooks/useGuns";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Shield, User, Target, CheckCircle2, Loader2, Plus } from "lucide-react";
@@ -16,6 +17,7 @@ const Onboarding = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { operators } = useOperators();
+  const { addGun } = useGuns();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [playStyle, setPlayStyle] = useState<string>("");
@@ -90,13 +92,7 @@ const Onboarding = () => {
   const handleGunSubmit = async (gunData: any) => {
     setLoading(true);
     try {
-      const { error } = await supabase.from("guns").insert({
-        ...gunData,
-        user_id: user?.id,
-      });
-
-      if (error) throw error;
-
+      addGun(gunData);
       toast.success("Welcome to Airsoft HQ!");
       navigate("/");
     } catch (error: any) {
