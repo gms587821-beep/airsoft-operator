@@ -7,7 +7,12 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Marketplace from "./pages/Marketplace";
+import MarketplaceProductDetail from "./pages/MarketplaceProductDetail";
+import MarketplaceListingDetail from "./pages/MarketplaceListingDetail";
+import SellGear from "./pages/SellGear";
 import Sites from "./pages/Sites";
+import SiteDetail from "./pages/SiteDetail";
+import AddSite from "./pages/AddSite";
 import Tools from "./pages/Tools";
 import Profile from "./pages/Profile";
 import Operator from "./pages/Operator";
@@ -41,7 +46,12 @@ const App = () => (
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
             <Route path="/marketplace" element={<ProtectedRoute><Marketplace /></ProtectedRoute>} />
+            <Route path="/marketplace/product/:id" element={<ProtectedRoute><MarketplaceProductDetail /></ProtectedRoute>} />
+            <Route path="/marketplace/listing/:id" element={<ProtectedRoute><MarketplaceListingDetail /></ProtectedRoute>} />
+            <Route path="/marketplace/sell" element={<ProtectedRoute><SellGear /></ProtectedRoute>} />
             <Route path="/sites" element={<ProtectedRoute><Sites /></ProtectedRoute>} />
+            <Route path="/sites/:id" element={<ProtectedRoute><SiteDetail /></ProtectedRoute>} />
+            <Route path="/sites/add" element={<ProtectedRoute><AddSite /></ProtectedRoute>} />
             <Route path="/tools" element={<ProtectedRoute><Tools /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/operator" element={<ProtectedRoute><Operator /></ProtectedRoute>} />
