@@ -4,7 +4,7 @@ import { Plus, ArrowLeft, MapPin, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Navigation from "@/components/Navigation";
+import { AppLayout } from "@/components/AppLayout";
 import { useAuth } from "@/hooks/useAuth";
 import { GameSessionCard } from "@/components/GameSessionCard";
 import { GameSessionForm } from "@/components/GameSessionForm";
@@ -37,8 +37,8 @@ const PlayerLog = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <div className="container mx-auto px-4 py-6 space-y-6">
+    <AppLayout>
+      <div className="space-y-6 py-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button
@@ -50,12 +50,12 @@ const PlayerLog = () => {
             </Button>
             <div>
               <h1 className="text-3xl font-bold text-foreground">Player Log</h1>
-              <p className="text-sm text-muted-foreground">Track where you've played and upcoming games</p>
+              <p className="text-sm text-muted-foreground">Track where you've played and plan upcoming games</p>
             </div>
           </div>
           <Button onClick={() => setShowForm(true)} className="gap-2">
             <Plus className="h-4 w-4" />
-            Add Game Session
+            Add Game
           </Button>
         </div>
 
@@ -84,9 +84,9 @@ const PlayerLog = () => {
                   <p className="text-muted-foreground mb-4">
                     Plan your next airsoft session or log a booking
                   </p>
-                  <Button onClick={() => setShowForm(true)} className="gap-2">
+                  <Button onClick={() => setShowForm(true)} size="lg" className="gap-2">
                     <Plus className="h-4 w-4" />
-                    Add Upcoming Game
+                    Schedule Game
                   </Button>
                 </div>
               </Card>
@@ -106,11 +106,11 @@ const PlayerLog = () => {
                 <div>
                   <h3 className="text-xl font-semibold text-foreground mb-2">No Past Games</h3>
                   <p className="text-muted-foreground mb-4">
-                    Start logging your airsoft sessions to track your game history
+                    Start logging your airsoft sessions to track your game history and stats
                   </p>
-                  <Button onClick={() => setShowForm(true)} className="gap-2">
+                  <Button onClick={() => setShowForm(true)} size="lg" className="gap-2">
                     <Plus className="h-4 w-4" />
-                    Add Past Game
+                    Log Past Game
                   </Button>
                 </div>
               </Card>
@@ -124,8 +124,7 @@ const PlayerLog = () => {
           </TabsContent>
         </Tabs>
       </div>
-      <Navigation />
-    </div>
+    </AppLayout>
   );
 };
 

@@ -3,7 +3,7 @@ import { ArrowLeft, Calendar, TrendingUp, Wrench, AlertCircle } from "lucide-rea
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import Navigation from "@/components/Navigation";
+import { AppLayout } from "@/components/AppLayout";
 import { useAllMaintenance } from "@/hooks/useAllMaintenance";
 import { format } from "date-fns";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
@@ -47,12 +47,12 @@ const MaintenanceDashboard = () => {
   }));
 
   return (
-    <div className="min-h-screen bg-background pb-24">
-      <div className="container mx-auto px-4 py-6 space-y-6">
+    <AppLayout>
+      <div className="space-y-6 py-2">
         <Button
           onClick={() => navigate('/tools')}
           variant="ghost"
-          className="gap-2 mb-4"
+          className="gap-2"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Tools
@@ -60,7 +60,7 @@ const MaintenanceDashboard = () => {
 
         <div className="space-y-2">
           <h1 className="text-3xl font-bold">Maintenance Dashboard</h1>
-          <p className="text-muted-foreground">Track all maintenance activities across your arsenal</p>
+          <p className="text-muted-foreground">Track service history and costs across your entire arsenal</p>
         </div>
 
         {/* Stats Overview */}
@@ -98,6 +98,8 @@ const MaintenanceDashboard = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* ... keep existing code ... */}
 
         {/* Upcoming Maintenance */}
         {upcomingMaintenance.length > 0 && (
@@ -216,11 +218,11 @@ const MaintenanceDashboard = () => {
             {recentMaintenance.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 <Wrench className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                <p>No maintenance logs yet</p>
+                <p className="mb-2">No maintenance logs yet</p>
+                <p className="text-sm mb-4">Start tracking service history for your guns</p>
                 <Button
                   onClick={() => navigate('/arsenal')}
                   variant="outline"
-                  className="mt-4"
                 >
                   Go to Arsenal
                 </Button>
@@ -254,9 +256,7 @@ const MaintenanceDashboard = () => {
           </CardContent>
         </Card>
       </div>
-
-      <Navigation />
-    </div>
+    </AppLayout>
   );
 };
 
