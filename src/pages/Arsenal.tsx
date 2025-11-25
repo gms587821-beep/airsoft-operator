@@ -1,12 +1,14 @@
 import { useState } from "react";
-import { Plus, Target } from "lucide-react";
+import { Plus, Target, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppLayout } from "@/components/AppLayout";
 import { useGuns, Gun } from "@/hooks/useGuns";
 import { GunCard } from "@/components/GunCard";
 import { GunForm } from "@/components/GunForm";
+import { useNavigate } from "react-router-dom";
 
 const Arsenal = () => {
+  const navigate = useNavigate();
   const { guns, isLoading, addGun, updateGun, deleteGun } = useGuns();
   const [showForm, setShowForm] = useState(false);
   const [editingGun, setEditingGun] = useState<Gun | null>(null);
@@ -45,7 +47,17 @@ const Arsenal = () => {
       <div className="space-y-6 py-2">
         {/* Header */}
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold text-foreground">Arsenal</h1>
+          <div className="flex items-center gap-2 mb-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate(-1)}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <h1 className="text-3xl font-bold text-foreground">Arsenal</h1>
+          </div>
           <p className="text-muted-foreground">
             Track all your guns, key details and performance here
           </p>
