@@ -90,16 +90,13 @@ const Onboarding = () => {
   };
 
   const handleGunSubmit = async (gunData: any) => {
-    setLoading(true);
-    try {
-      addGun(gunData);
-      toast.success("Welcome to Airsoft HQ!");
-      navigate("/");
-    } catch (error: any) {
-      toast.error("Failed to add gun: " + error.message);
-    } finally {
-      setLoading(false);
-    }
+    addGun(gunData, {
+      onSuccess: () => {
+        toast.success("Welcome to Airsoft HQ!");
+        // Small delay to ensure queries are invalidated before navigation
+        setTimeout(() => navigate("/"), 100);
+      },
+    });
   };
 
   if (!user) {
