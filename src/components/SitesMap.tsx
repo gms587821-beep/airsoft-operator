@@ -2,6 +2,7 @@ import { APIProvider, Map, AdvancedMarker, InfoWindow } from "@vis.gl/react-goog
 import { useState } from "react";
 import { MapPin, Navigation } from "lucide-react";
 import { Site } from "@/hooks/useSites";
+import { GOOGLE_MAPS_API_KEY } from "@/config/maps";
 
 interface SitesMapProps {
   sites: Site[];
@@ -11,13 +12,13 @@ interface SitesMapProps {
 export const SitesMap = ({ sites, onSiteClick }: SitesMapProps) => {
   const [selectedSite, setSelectedSite] = useState<Site | null>(null);
 
-  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-
+  const apiKey = GOOGLE_MAPS_API_KEY;
+ 
   // Filter sites that have coordinates
   const sitesWithCoords = sites.filter(
     (site) => site.latitude && site.longitude
   );
-
+ 
   // Calculate center based on sites or default to UK
   const center =
     sitesWithCoords.length > 0
@@ -26,7 +27,7 @@ export const SitesMap = ({ sites, onSiteClick }: SitesMapProps) => {
           lng: sitesWithCoords.reduce((sum, site) => sum + Number(site.longitude), 0) / sitesWithCoords.length,
         }
       : { lat: 54.5, lng: -3 }; // UK center
-
+ 
   if (!apiKey) {
     return (
       <div className="h-48 bg-secondary border-border rounded-lg flex items-center justify-center">
@@ -34,6 +35,9 @@ export const SitesMap = ({ sites, onSiteClick }: SitesMapProps) => {
           <MapPin className="w-12 h-12 text-muted-foreground mx-auto" />
           <p className="text-muted-foreground text-sm">
             Google Maps API key not configured
+          </p>
+          <p className="text-xs text-muted-foreground mt-1">
+            Add your browser API key in <code>src/config/maps.ts</code>.
           </p>
         </div>
       </div>
