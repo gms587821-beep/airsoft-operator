@@ -736,6 +736,7 @@ export type Database = {
           chrono_rules: string | null
           city: string | null
           country: string
+          county: string | null
           created_at: string
           created_by: string | null
           description: string | null
@@ -745,7 +746,10 @@ export type Database = {
           latitude: number | null
           longitude: number | null
           name: string
+          opening_hours: string | null
+          phone: string | null
           region: string | null
+          source_url: string | null
           thumbnail_url: string | null
           updated_at: string
           website_url: string | null
@@ -755,6 +759,7 @@ export type Database = {
           chrono_rules?: string | null
           city?: string | null
           country: string
+          county?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
@@ -764,7 +769,10 @@ export type Database = {
           latitude?: number | null
           longitude?: number | null
           name: string
+          opening_hours?: string | null
+          phone?: string | null
           region?: string | null
+          source_url?: string | null
           thumbnail_url?: string | null
           updated_at?: string
           website_url?: string | null
@@ -774,6 +782,7 @@ export type Database = {
           chrono_rules?: string | null
           city?: string | null
           country?: string
+          county?: string | null
           created_at?: string
           created_by?: string | null
           description?: string | null
@@ -783,7 +792,10 @@ export type Database = {
           latitude?: number | null
           longitude?: number | null
           name?: string
+          opening_hours?: string | null
+          phone?: string | null
           region?: string | null
+          source_url?: string | null
           thumbnail_url?: string | null
           updated_at?: string
           website_url?: string | null
