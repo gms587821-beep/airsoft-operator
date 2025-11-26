@@ -76,7 +76,10 @@ const Onboarding = () => {
     try {
       const { error } = await supabase
         .from("profiles")
-        .update({ active_operator_id: selectedOperator })
+        .update({ 
+          active_operator_id: selectedOperator,
+          primary_role: playStyle 
+        })
         .eq("id", user?.id);
 
       if (error) throw error;
