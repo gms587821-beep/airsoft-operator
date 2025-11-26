@@ -4,9 +4,9 @@ import { NavLink } from "./NavLink";
 const Navigation = () => {
   const navItems = [
     { icon: Home, label: "Home", path: "/" },
-    { icon: ShoppingBag, label: "Market", path: "/marketplace" },
-    { icon: MapPin, label: "Sites", path: "/sites" },
     { icon: Wrench, label: "Tools", path: "/tools" },
+    { icon: MapPin, label: "Sites", path: "/sites" },
+    { icon: ShoppingBag, label: "Market", path: "/marketplace" },
     { icon: User, label: "Profile", path: "/profile" },
   ];
 
