@@ -640,6 +640,7 @@ export type Database = {
           games_played: number | null
           id: string
           member_since: string | null
+          primary_role: string | null
           updated_at: string | null
         }
         Insert: {
@@ -649,6 +650,7 @@ export type Database = {
           games_played?: number | null
           id: string
           member_since?: string | null
+          primary_role?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -658,6 +660,7 @@ export type Database = {
           games_played?: number | null
           id?: string
           member_since?: string | null
+          primary_role?: string | null
           updated_at?: string | null
         }
         Relationships: [

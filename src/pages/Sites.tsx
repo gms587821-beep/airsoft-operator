@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { MapPin, Search, Plus, Heart, Filter } from "lucide-react";
+import { MapPin, Search, Plus, Heart, Filter, Trophy, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -16,10 +16,11 @@ import {
 } from "@/components/ui/select";
 import { AppLayout } from "@/components/AppLayout";
 import { useSites } from "@/hooks/useSites";
-import { useIsSiteFavourite, useToggleSiteFavourite } from "@/hooks/useSiteFavourites";
+import { useIsSiteFavourite, useToggleSiteFavourite, useSiteFavourites } from "@/hooks/useSiteFavourites";
 import { useSiteRatingStats } from "@/hooks/useSiteRatings";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SitesMap } from "@/components/SitesMap";
+import { useGameSessions } from "@/hooks/useGameSessions";
 
 const FIELD_TYPES = ["All", "CQB", "Woodland", "Indoor", "Mixed", "Milsim", "Shop"];
 const LOCATION_TYPES = ["All", "Playing Sites", "Shops"];
@@ -102,6 +103,42 @@ const Sites = () => {
     locationType: locationType === "All" ? undefined : locationType,
   });
 
+  const { gameSessions } = useGameSessions();
+  const { data: favourites = [] } = useSiteFavourites();
+
+  // Calculate activity stats
+  const activityStats = useMemo(() => {
+    const totalSessions = gameSessions.length;
+    const uniqueSites = new Set(gameSessions.map((s) => s.site_id).filter(Boolean));
+    const uniqueSiteCount = uniqueSites.size;
+
+    // Find most played site
+    const siteCounts = gameSessions.reduce((acc, session) => {
+      if (session.site_id) {
+        acc[session.site_id] = (acc[session.site_id] || 0) + 1;
+      }
+      return acc;
+    }, {} as Record<string, number>);
+
+    const mostPlayedSiteId = Object.entries(siteCounts).sort(
+      ([, a], [, b]) => b - a
+    )[0]?.[0];
+
+    const mostPlayedSite = sites.find((s) => s.id === mostPlayedSiteId);
+
+    // Get most recent favourite
+    const recentFavourite = favourites.length > 0
+      ? sites.find((s) => s.id === favourites[0]?.site_id)
+      : null;
+
+    return {
+      totalSessions,
+      uniqueSiteCount,
+      mostPlayedSite,
+      recentFavourite,
+    };
+  }, [gameSessions, sites, favourites]);
+
   return (
     <AppLayout>
       <div className="space-y-6">
@@ -116,6 +153,55 @@ const Sites = () => {
           </Button>
         </div>
 
+        {/* Your Activity Summary */}
+        {locationType !== "Shops" && (
+          <Card className="p-4 bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                  <Trophy className="w-6 h-6 text-primary" />
+                </div>
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-foreground mb-2">Your Activity</h3>
+                {activityStats.totalSessions > 0 ? (
+                  <div className="space-y-1 text-sm">
+                    <p className="text-muted-foreground">
+                      You've logged <strong className="text-foreground">{activityStats.totalSessions}</strong>{" "}
+                      sessions across <strong className="text-foreground">{activityStats.uniqueSiteCount}</strong>{" "}
+                      sites.
+                    </p>
+                    {activityStats.mostPlayedSite && (
+                      <p className="text-muted-foreground">
+                        Most played:{" "}
+                        <strong className="text-foreground">{activityStats.mostPlayedSite.name}</strong>
+                      </p>
+                    )}
+                    {activityStats.recentFavourite && (
+                      <p className="text-muted-foreground">
+                        Favourite site:{" "}
+                        <strong className="text-foreground">{activityStats.recentFavourite.name}</strong>
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    You haven't logged any sessions yet.
+                  </p>
+                )}
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => navigate("/player-log")}
+              >
+                <Calendar className="w-4 h-4 mr-2" />
+                Log Session
+              </Button>
+            </div>
+          </Card>
+        )}
+
         {/* Search and Filters */}
         <div className="space-y-4">
           <div className="flex gap-3">
@@ -129,16 +215,14 @@ const Sites = () => {
               />
             </div>
             <Select value={locationType} onValueChange={setLocationType}>
-              <SelectTrigger className="w-[150px]">
+              <SelectTrigger className="w-[170px]">
                 <Filter className="w-4 h-4 mr-2" />
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {LOCATION_TYPES.map((type) => (
-                  <SelectItem key={type} value={type}>
-                    {type}
-                  </SelectItem>
-                ))}
+                <SelectItem value="All">All</SelectItem>
+                <SelectItem value="Playing Sites">🪖 Playing Sites</SelectItem>
+                <SelectItem value="Shops">🛒 Shops & Retail</SelectItem>
               </SelectContent>
             </Select>
             {locationType !== "Shops" && (
