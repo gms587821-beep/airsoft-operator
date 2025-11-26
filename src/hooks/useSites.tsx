@@ -36,6 +36,7 @@ interface UseSitesParams {
   searchTerm?: string;
   country?: string;
   favouritesOnly?: boolean;
+  locationType?: string;
 }
 
 export const useSites = (params?: UseSitesParams) => {
@@ -61,6 +62,15 @@ export const useSites = (params?: UseSitesParams) => {
 
       if (params?.country) {
         query = query.eq("country", params.country);
+      }
+
+      // Filter by location type (Playing Sites vs Shops)
+      if (params?.locationType) {
+        if (params.locationType === "Shops") {
+          query = query.eq("field_type", "Shop");
+        } else if (params.locationType === "Playing Sites") {
+          query = query.neq("field_type", "Shop");
+        }
       }
 
       const { data, error } = await query;

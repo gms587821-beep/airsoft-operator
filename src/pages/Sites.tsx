@@ -21,7 +21,8 @@ import { useSiteRatingStats } from "@/hooks/useSiteRatings";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SitesMap } from "@/components/SitesMap";
 
-const FIELD_TYPES = ["All", "CQB", "Woodland", "Indoor", "Mixed", "Milsim"];
+const FIELD_TYPES = ["All", "CQB", "Woodland", "Indoor", "Mixed", "Milsim", "Shop"];
+const LOCATION_TYPES = ["All", "Playing Sites", "Shops"];
 
 const SiteCard = ({ site }: { site: any }) => {
   const navigate = useNavigate();
@@ -91,12 +92,14 @@ const Sites = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [fieldType, setFieldType] = useState<string>("All");
+  const [locationType, setLocationType] = useState<string>("All");
   const [favouritesOnly, setFavouritesOnly] = useState(false);
 
   const { data: sites = [], isLoading } = useSites({
     fieldType: fieldType === "All" ? undefined : fieldType,
     searchTerm: searchTerm || undefined,
     favouritesOnly,
+    locationType: locationType === "All" ? undefined : locationType,
   });
 
   return (
@@ -104,10 +107,12 @@ const Sites = () => {
       <div className="space-y-6">
         {/* Header */}
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-foreground">Airsoft Sites</h1>
+          <h1 className="text-3xl font-bold text-foreground">
+            {locationType === "Shops" ? "Airsoft Shops" : locationType === "Playing Sites" ? "Airsoft Sites" : "Sites & Shops"}
+          </h1>
           <Button onClick={() => navigate("/sites/add")}>
             <Plus className="w-4 h-4 mr-2" />
-            Add Site
+            Add {locationType === "Shops" ? "Shop" : "Site"}
           </Button>
         </div>
 
@@ -117,24 +122,39 @@ const Sites = () => {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search sites by name or location..."
+                placeholder={locationType === "Shops" ? "Search shops by name or location..." : "Search sites by name or location..."}
                 className="pl-10"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <Select value={fieldType} onValueChange={setFieldType}>
-              <SelectTrigger className="w-[140px]">
+            <Select value={locationType} onValueChange={setLocationType}>
+              <SelectTrigger className="w-[150px]">
+                <Filter className="w-4 h-4 mr-2" />
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {FIELD_TYPES.map((type) => (
+                {LOCATION_TYPES.map((type) => (
                   <SelectItem key={type} value={type}>
                     {type}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
+            {locationType !== "Shops" && (
+              <Select value={fieldType} onValueChange={setFieldType}>
+                <SelectTrigger className="w-[140px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {FIELD_TYPES.filter(t => t !== "Shop").map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
 
           <div className="flex items-center space-x-2">
