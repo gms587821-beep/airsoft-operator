@@ -3,7 +3,7 @@ import { Gun } from "@/hooks/useGuns";
 import { Site } from "@/hooks/useSites";
 import { Product } from "@/hooks/useMarketplaceProducts";
 
-type MaintenanceRecord = Tables<"gun_maintenance">;
+type MaintenanceRecord = any; // Accept maintenance logs with extended types
 type GameSession = Tables<"game_sessions">;
 type Profile = Tables<"profiles">;
 

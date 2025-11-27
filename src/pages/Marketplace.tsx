@@ -21,7 +21,8 @@ import { MarketplaceFilters } from "@/components/MarketplaceFilters";
 import { useProfile } from "@/hooks/useProfile";
 import { useGuns } from "@/hooks/useGuns";
 import { useOperators } from "@/hooks/useOperators";
-import { OperatorPortrait } from "@/components/OperatorPortrait";
+import { OperatorBanner } from "@/components/OperatorBanner";
+import { getOperatorAdviceForPage } from "@/lib/operatorLogic";
 
 const CATEGORIES = ["All", "Rifle", "Pistol", "SMG", "Shotgun", "Sniper", "Support", "Gear", "Upgrade", "Accessory"];
 
@@ -40,6 +41,15 @@ const Marketplace = () => {
   const { data: profile } = useProfile();
   const { guns = [] } = useGuns();
   const { activeOperator } = useOperators();
+  
+  const operatorAdvice = activeOperator ? getOperatorAdviceForPage(
+    "marketplace",
+    profile || null,
+    guns,
+    [],
+    [],
+    []
+  ) : null;
 
   const {
     data: products = [],
@@ -128,28 +138,14 @@ const Marketplace = () => {
           </div>
         </div>
 
-        {/* Operator Picks */}
-        {activeOperator && profile?.primary_role && (
-          <Card className="p-4 bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20">
-            <div className="flex items-start gap-4">
-              <OperatorPortrait
-                avatar={activeOperator.default_avatar || "👤"}
-                accentColor={activeOperator.accent_color}
-                size="lg"
-              />
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <Sparkles className="w-4 h-4 text-primary" />
-                  <span className="font-semibold text-foreground">
-                    {activeOperator.name} says:
-                  </span>
-                </div>
-                <p className="text-sm text-muted-foreground">
-                  {getOperatorAdvice()}
-                </p>
-              </div>
-            </div>
-          </Card>
+        {/* Operator Banner */}
+        {activeOperator && operatorAdvice && (
+          <OperatorBanner
+            operator={activeOperator}
+            message={operatorAdvice.message}
+            actionLabel={operatorAdvice.actionLabel}
+            actionPath={operatorAdvice.actionPath}
+          />
         )}
 
         {/* Recommended for your role */}

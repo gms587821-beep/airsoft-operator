@@ -6,10 +6,29 @@ import { AppLayout } from "@/components/AppLayout";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { useOperators } from "@/hooks/useOperators";
+import { useProfile } from "@/hooks/useProfile";
+import { useGuns } from "@/hooks/useGuns";
+import { useGameSessions } from "@/hooks/useGameSessions";
+import { OperatorBanner } from "@/components/OperatorBanner";
+import { getOperatorAdviceForPage } from "@/lib/operatorLogic";
 
 const Index = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { activeOperator } = useOperators();
+  const { data: profile } = useProfile();
+  const { guns = [] } = useGuns();
+  const { gameSessions = [] } = useGameSessions();
+  
+  const operatorAdvice = activeOperator ? getOperatorAdviceForPage(
+    "home",
+    profile || null,
+    guns,
+    [],
+    gameSessions,
+    []
+  ) : null;
 
   useEffect(() => {
     // Check if onboarding is needed
@@ -60,6 +79,16 @@ const Index = () => {
 
   return (
     <AppLayout>
+      {/* Operator Banner */}
+      {activeOperator && operatorAdvice && (
+        <OperatorBanner
+          operator={activeOperator}
+          message={operatorAdvice.message}
+          actionLabel={operatorAdvice.actionLabel}
+          actionPath={operatorAdvice.actionPath}
+        />
+      )}
+
       {/* Hero Section */}
       <section className="relative overflow-hidden -mx-4 px-4">
         <div className="absolute inset-0 bg-gradient-hero" />

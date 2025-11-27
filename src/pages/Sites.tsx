@@ -21,6 +21,10 @@ import { useSiteRatingStats } from "@/hooks/useSiteRatings";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SitesMap } from "@/components/SitesMap";
 import { useGameSessions } from "@/hooks/useGameSessions";
+import { useOperators } from "@/hooks/useOperators";
+import { useProfile } from "@/hooks/useProfile";
+import { OperatorBanner } from "@/components/OperatorBanner";
+import { getOperatorAdviceForPage } from "@/lib/operatorLogic";
 
 const FIELD_TYPES = ["All", "CQB", "Woodland", "Indoor", "Mixed", "Milsim", "Shop"];
 const LOCATION_TYPES = ["All", "Playing Sites", "Shops"];
@@ -105,6 +109,18 @@ const Sites = () => {
 
   const { gameSessions } = useGameSessions();
   const { data: favourites = [] } = useSiteFavourites();
+  const { activeOperator } = useOperators();
+  const { data: profile } = useProfile();
+  
+  const favouriteSites = sites.filter(s => favourites.some(f => f.site_id === s.id));
+  const operatorAdvice = activeOperator ? getOperatorAdviceForPage(
+    "sites",
+    profile || null,
+    [],
+    [],
+    gameSessions,
+    favouriteSites
+  ) : null;
 
   // Calculate activity stats
   const activityStats = useMemo(() => {
@@ -142,6 +158,16 @@ const Sites = () => {
   return (
     <AppLayout>
       <div className="space-y-6">
+        {/* Operator Banner */}
+        {activeOperator && operatorAdvice && locationType !== "Shops" && (
+          <OperatorBanner
+            operator={activeOperator}
+            message={operatorAdvice.message}
+            actionLabel={operatorAdvice.actionLabel}
+            actionPath={operatorAdvice.actionPath}
+          />
+        )}
+
         {/* Header */}
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold text-foreground">

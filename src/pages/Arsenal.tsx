@@ -6,12 +6,29 @@ import { useGuns, Gun } from "@/hooks/useGuns";
 import { GunCard } from "@/components/GunCard";
 import { GunForm } from "@/components/GunForm";
 import { useNavigate } from "react-router-dom";
+import { useOperators } from "@/hooks/useOperators";
+import { useProfile } from "@/hooks/useProfile";
+import { useAllMaintenance } from "@/hooks/useAllMaintenance";
+import { OperatorBanner } from "@/components/OperatorBanner";
+import { getOperatorAdviceForPage } from "@/lib/operatorLogic";
 
 const Arsenal = () => {
   const navigate = useNavigate();
   const { guns, isLoading, addGun, updateGun, deleteGun } = useGuns();
   const [showForm, setShowForm] = useState(false);
   const [editingGun, setEditingGun] = useState<Gun | null>(null);
+  const { activeOperator } = useOperators();
+  const { data: profile } = useProfile();
+  const { maintenanceLogs = [] } = useAllMaintenance();
+  
+  const operatorAdvice = activeOperator ? getOperatorAdviceForPage(
+    "arsenal",
+    profile || null,
+    guns || [],
+    maintenanceLogs,
+    [],
+    []
+  ) : null;
 
   const handleEdit = (gun: Gun) => {
     setEditingGun(gun);
@@ -45,6 +62,16 @@ const Arsenal = () => {
   return (
     <AppLayout>
       <div className="space-y-6 py-2">
+        {/* Operator Banner */}
+        {activeOperator && operatorAdvice && guns && guns.length > 0 && (
+          <OperatorBanner
+            operator={activeOperator}
+            message={operatorAdvice.message}
+            actionLabel={operatorAdvice.actionLabel}
+            actionPath={operatorAdvice.actionPath}
+          />
+        )}
+
         {/* Header */}
         <div className="space-y-2">
           <div className="flex items-center gap-2 mb-2">
