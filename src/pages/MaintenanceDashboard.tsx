@@ -8,12 +8,29 @@ import { useAllMaintenance } from "@/hooks/useAllMaintenance";
 import { format } from "date-fns";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { useOperators } from "@/hooks/useOperators";
+import { useProfile } from "@/hooks/useProfile";
+import { useGuns } from "@/hooks/useGuns";
+import { OperatorBanner } from "@/components/OperatorBanner";
+import { getOperatorAdviceForPage } from "@/lib/operatorLogic";
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--secondary))', 'hsl(var(--accent))', 'hsl(var(--muted))'];
 
 const MaintenanceDashboard = () => {
   const navigate = useNavigate();
   const { upcomingMaintenance, recentMaintenance, costAnalytics, isLoading } = useAllMaintenance();
+  const { activeOperator } = useOperators();
+  const { data: profile } = useProfile();
+  const { guns = [] } = useGuns();
+  
+  const operatorAdvice = activeOperator ? getOperatorAdviceForPage(
+    "maintenance",
+    profile || null,
+    guns,
+    recentMaintenance,
+    [],
+    []
+  ) : null;
 
   if (isLoading) {
     return (
@@ -62,6 +79,16 @@ const MaintenanceDashboard = () => {
           <h1 className="text-3xl font-bold">Maintenance Dashboard</h1>
           <p className="text-muted-foreground">Track service history and costs across your entire arsenal</p>
         </div>
+
+        {/* Operator Banner */}
+        {activeOperator && operatorAdvice && (
+          <OperatorBanner
+            operator={activeOperator}
+            message={operatorAdvice.message}
+            actionLabel={operatorAdvice.actionLabel}
+            actionPath={operatorAdvice.actionPath}
+          />
+        )}
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

@@ -2,9 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
-import { Tables } from "@/integrations/supabase/types";
-
-type Operator = Tables<"operators">;
+import { Operator } from "@/hooks/useOperators";
 
 interface OperatorBannerProps {
   operator: Operator;

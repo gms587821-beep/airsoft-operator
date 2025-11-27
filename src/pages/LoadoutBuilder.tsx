@@ -10,6 +10,11 @@ import Navigation from "@/components/Navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { usePlannedLoadouts } from "@/hooks/usePlannedLoadouts";
 import { LoadoutCard } from "@/components/LoadoutCard";
+import { useOperators } from "@/hooks/useOperators";
+import { useProfile } from "@/hooks/useProfile";
+import { AppLayout } from "@/components/AppLayout";
+import { OperatorBanner } from "@/components/OperatorBanner";
+import { getOperatorAdviceForPage } from "@/lib/operatorLogic";
 
 const LoadoutBuilder = () => {
   const navigate = useNavigate();
@@ -21,6 +26,14 @@ const LoadoutBuilder = () => {
     name: "",
     description: "",
   });
+  const { activeOperator } = useOperators();
+  const { data: profile } = useProfile();
+  
+  const operatorAdvice = activeOperator && loadouts.length > 0 ? {
+    message: "Need help optimizing this loadout? I can suggest improvements based on your play style.",
+    actionLabel: "Get Advice",
+    actionPath: "/operator/chat?action=loadout"
+  } : null;
 
   if (!user) {
     return (
@@ -56,8 +69,18 @@ const LoadoutBuilder = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <div className="container mx-auto px-4 py-6 space-y-6">
+    <AppLayout>
+      <div className="space-y-6 py-2">
+        {/* Operator Banner */}
+        {activeOperator && operatorAdvice && (
+          <OperatorBanner
+            operator={activeOperator}
+            message={operatorAdvice.message}
+            actionLabel={operatorAdvice.actionLabel}
+            actionPath={operatorAdvice.actionPath}
+          />
+        )}
+
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Button
@@ -169,8 +192,7 @@ const LoadoutBuilder = () => {
           </div>
         )}
       </div>
-      <Navigation />
-    </div>
+    </AppLayout>
   );
 };
 
