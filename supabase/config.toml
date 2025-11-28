@@ -2,3 +2,6 @@ project_id = "vwboamysntsgddterjlt"
 
 [functions.ai-diagnostics]
 verify_jwt = false
+
+[functions.operator-chat]
+verify_jwt = false
