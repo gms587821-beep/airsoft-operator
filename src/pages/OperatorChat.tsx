@@ -9,18 +9,9 @@ import { Send, Loader2 } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { useOperators } from "@/hooks/useOperators";
 import { useGuns } from "@/hooks/useGuns";
-import { useAllMaintenance } from "@/hooks/useAllMaintenance";
 import { useGameSessions } from "@/hooks/useGameSessions";
 import { useSites } from "@/hooks/useSites";
 import { useSiteFavourites } from "@/hooks/useSiteFavourites";
-import { useMarketplaceProducts } from "@/hooks/useMarketplaceProducts";
-import {
-  getGunDiagnosis,
-  getUpgradeAdvice,
-  getSiteRecommendations,
-  getLoadoutSuggestion,
-  getPreGameBrief
-} from "@/lib/operatorLogic";
 
 interface Message {
   id: string;
@@ -41,11 +32,9 @@ const OperatorChat = () => {
   const { data: profile } = useProfile();
   const { operators } = useOperators();
   const { guns } = useGuns();
-  const { maintenanceLogs } = useAllMaintenance();
   const { gameSessions: sessions } = useGameSessions();
   const { data: sites } = useSites();
   const { data: favourites } = useSiteFavourites();
-  const { data: products } = useMarketplaceProducts();
 
   const activeOperator = operators?.find(
     op => op.id === profile?.active_operator_id
@@ -104,90 +93,116 @@ const OperatorChat = () => {
     setTimeout(() => handleSend(userMessage), 100);
   };
 
-  const generateResponse = (userInput: string): string => {
-    const input = userInput.toLowerCase();
-    
-    // Diagnose
-    if (input.includes("diagnose") || input.includes("check my gun") || input.includes("gun problem")) {
-      if (!guns || guns.length === 0) {
-        return "No guns registered in your arsenal. Add your weapons first so I can analyze them.";
+  const generateResponse = async (userInput: string) => {
+    if (!activeOperator) return;
+
+    const userContext = {
+      primaryRole: profile?.primary_role,
+      arsenalCount: guns?.length || 0,
+      gamesPlayed: sessions?.length || 0,
+      favoriteSites: favourites?.map(f => sites?.find(s => s.id === f.site_id)?.name).filter(Boolean).join(", "),
+      recentGuns: guns?.slice(0, 2).map(g => g.name).join(", "),
+    };
+
+    const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/operator-chat`;
+
+    try {
+      const resp = await fetch(CHAT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({
+          messages: messages
+            .filter(m => m.role !== "operator" || m.content)
+            .map(m => ({ role: m.role === "user" ? "user" : "assistant", content: m.content })),
+          operatorName: activeOperator.name,
+          operatorRole: activeOperator.role,
+          operatorPersonality: activeOperator.personality_description || "Professional, tactical, and knowledgeable. Uses military terminology naturally.",
+          userContext,
+        }),
+      });
+
+      if (!resp.ok) {
+        if (resp.status === 429) {
+          setMessages(prev => {
+            const updated = [...prev];
+            updated[updated.length - 1].content = "Rate limit reached. Please try again in a moment.";
+            return updated;
+          });
+          return;
+        }
+        if (resp.status === 402) {
+          setMessages(prev => {
+            const updated = [...prev];
+            updated[updated.length - 1].content = "AI service requires additional credits. Please contact support.";
+            return updated;
+          });
+          return;
+        }
+        throw new Error("Failed to get response");
       }
-      
-      const diagnoses = guns.slice(0, 3).map(gun => 
-        getGunDiagnosis(gun, (maintenanceLogs || []) as any)
-      );
-      
-      return diagnoses.join("\n\n");
-    }
-    
-    // Upgrades
-    if (input.includes("upgrade") || input.includes("improve") || input.includes("parts")) {
-      if (!guns || guns.length === 0) {
-        return "Register your weapons first. I need to know what you're running before I can suggest upgrades.";
+
+      if (!resp.body) throw new Error("No response body");
+
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let textBuffer = "";
+      let streamDone = false;
+      let fullResponse = "";
+
+      while (!streamDone) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        textBuffer += decoder.decode(value, { stream: true });
+
+        let newlineIndex: number;
+        while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
+          let line = textBuffer.slice(0, newlineIndex);
+          textBuffer = textBuffer.slice(newlineIndex + 1);
+
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (line.startsWith(":") || line.trim() === "") continue;
+          if (!line.startsWith("data: ")) continue;
+
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === "[DONE]") {
+            streamDone = true;
+            break;
+          }
+
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            if (content) {
+              fullResponse += content;
+              setMessages(prev => {
+                const updated = [...prev];
+                const lastMsg = updated[updated.length - 1];
+                if (lastMsg && lastMsg.role === "operator") {
+                  lastMsg.content = fullResponse;
+                }
+                return updated;
+              });
+            }
+          } catch {
+            textBuffer = line + "\n" + textBuffer;
+            break;
+          }
+        }
       }
-      
-      const advice = guns.slice(0, 2).map(gun => 
-        getUpgradeAdvice(gun, products || [])
-      );
-      
-      return advice.join("\n\n");
+    } catch (error) {
+      console.error("Error calling operator chat:", error);
+      setMessages(prev => {
+        const updated = [...prev];
+        updated[updated.length - 1].content = "I'm having trouble connecting right now. Please try again.";
+        return updated;
+      });
     }
-    
-    // Sites
-    if (input.includes("site") || input.includes("where") || input.includes("play")) {
-      const recommendations = getSiteRecommendations(
-        sites || [],
-        profile?.primary_role || "Rifleman",
-        [] // favourites need to be full Site objects, not just IDs
-      );
-      
-      return recommendations.join("\n\n");
-    }
-    
-    // Loadout
-    if (input.includes("loadout") || input.includes("gear") || input.includes("kit")) {
-      return getLoadoutSuggestion(
-        profile?.primary_role || "Rifleman",
-        guns || [],
-        products || []
-      );
-    }
-    
-    // Brief
-    if (input.includes("brief") || input.includes("prepare") || input.includes("ready")) {
-      const lastSite = sessions?.[0]?.site_id 
-        ? sites?.find(s => s.id === sessions[0].site_id)
-        : null;
-      
-      return getPreGameBrief(
-        profile?.primary_role || "Rifleman",
-        lastSite || null
-      );
-    }
-    
-    // Stats
-    if (input.includes("stats") || input.includes("performance") || input.includes("how am i")) {
-      return `**Operator Status:**\n\n` +
-        `Arsenal: ${guns?.length || 0} weapons\n` +
-        `Maintenance logs: ${maintenanceLogs?.length || 0}\n` +
-        `Games played: ${sessions?.length || 0}\n` +
-        `Favourite sites: ${favourites?.length || 0}\n` +
-        `Role: ${profile?.primary_role || "Not set"}\n\n` +
-        `You're building a solid foundation. Keep logging sessions and maintaining your gear.`;
-    }
-    
-    // Default
-    return `Roger that. I can help with:\n\n` +
-      `• "Diagnose my guns" - weapon status check\n` +
-      `• "What upgrades should I get?" - performance advice\n` +
-      `• "Recommend sites" - find fields\n` +
-      `• "Build a loadout" - gear configuration\n` +
-      `• "Pre-game brief" - mission prep\n` +
-      `• "Show my stats" - operator status\n\n` +
-      `What do you need?`;
   };
 
-  const handleSend = (text?: string) => {
+  const handleSend = async (text?: string) => {
     const messageText = text || input.trim();
     if (!messageText || isProcessing) return;
 
@@ -202,18 +217,20 @@ const OperatorChat = () => {
     setInput("");
     setIsProcessing(true);
 
-    setTimeout(() => {
-      const response = generateResponse(messageText);
-      const operatorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "operator",
-        content: response,
-        timestamp: new Date()
-      };
-      
-      setMessages(prev => [...prev, operatorMessage]);
+    // Add empty operator message that will be filled by streaming
+    const operatorMessage: Message = {
+      id: (Date.now() + 1).toString(),
+      role: "operator",
+      content: "",
+      timestamp: new Date()
+    };
+    setMessages(prev => [...prev, operatorMessage]);
+
+    try {
+      await generateResponse(messageText);
+    } finally {
       setIsProcessing(false);
-    }, 800);
+    }
   };
 
   if (!activeOperator) {
