@@ -142,6 +142,14 @@ const Auth = () => {
                     "Sign In"
                   )}
                 </Button>
+                <Button 
+                  type="button"
+                  variant="ghost" 
+                  className="w-full text-sm"
+                  onClick={() => toast.info("Password reset coming soon")}
+                >
+                  Forgot password?
+                </Button>
               </form>
             </TabsContent>
 

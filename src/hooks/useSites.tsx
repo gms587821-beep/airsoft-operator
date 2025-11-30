@@ -9,12 +9,15 @@ export interface Site {
   country: string;
   region?: string;
   city?: string;
+  county?: string;
   latitude?: number;
   longitude?: number;
   field_type: string;
   thumbnail_url?: string;
   website_url?: string;
   booking_url?: string;
+  phone?: string;
+  opening_hours?: string;
   chrono_rules?: string;
   description?: string;
   is_user_created: boolean;

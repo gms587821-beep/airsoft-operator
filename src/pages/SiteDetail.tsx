@@ -115,10 +115,29 @@ const SiteDetail = () => {
             </div>
           )}
 
+          {/* Contact & Hours */}
+          {(site.phone || site.opening_hours) && (
+            <div className="pt-4 border-t border-border space-y-2">
+              <h3 className="font-semibold text-foreground mb-2">Contact & Hours</h3>
+              {site.phone && (
+                <div className="flex items-start gap-2">
+                  <span className="text-sm font-medium text-muted-foreground w-24">Phone:</span>
+                  <span className="text-sm text-foreground">{site.phone}</span>
+                </div>
+              )}
+              {site.opening_hours && (
+                <div className="flex items-start gap-2">
+                  <span className="text-sm font-medium text-muted-foreground w-24">Hours:</span>
+                  <span className="text-sm text-foreground whitespace-pre-wrap">{site.opening_hours}</span>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Chrono Rules */}
           {site.chrono_rules && (
             <div className="pt-4 border-t border-border">
-              <h3 className="font-semibold text-foreground mb-2">Chrono Rules</h3>
+              <h3 className="font-semibold text-foreground mb-2">FPS/Joule Limits</h3>
               <p className="text-muted-foreground whitespace-pre-wrap">{site.chrono_rules}</p>
             </div>
           )}

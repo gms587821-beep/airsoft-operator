@@ -1,20 +1,59 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, ArrowLeft, MapPin, Calendar } from "lucide-react";
+import { Plus, ArrowLeft, MapPin, Calendar, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AppLayout } from "@/components/AppLayout";
 import { useAuth } from "@/hooks/useAuth";
 import { GameSessionCard } from "@/components/GameSessionCard";
 import { GameSessionForm } from "@/components/GameSessionForm";
 import { useGameSessions } from "@/hooks/useGameSessions";
+import { format } from "date-fns";
 
 const PlayerLog = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { gameSessions, upcomingSessions, pastSessions, isLoading } = useGameSessions();
   const [showForm, setShowForm] = useState(false);
+  const [siteFilter, setSiteFilter] = useState<string>("all");
+  const [weaponFilter, setWeaponFilter] = useState<string>("all");
+
+  // Extract unique sites and weapons for filters
+  const uniqueSites = useMemo(() => {
+    const sites = new Set(pastSessions.map(s => s.site_name));
+    return Array.from(sites);
+  }, [pastSessions]);
+
+  const uniqueWeapons = useMemo(() => {
+    const weapons = new Set(pastSessions.filter(s => s.weapon_used).map(s => s.weapon_used!));
+    return Array.from(weapons);
+  }, [pastSessions]);
+
+  // Filter and group past sessions by month
+  const groupedPastSessions = useMemo(() => {
+    let filtered = pastSessions;
+    if (siteFilter !== "all") {
+      filtered = filtered.filter(s => s.site_name === siteFilter);
+    }
+    if (weaponFilter !== "all") {
+      filtered = filtered.filter(s => s.weapon_used === weaponFilter);
+    }
+
+    const grouped: Record<string, typeof filtered> = {};
+    filtered.forEach(session => {
+      const monthKey = format(new Date(session.game_date), 'MMMM yyyy');
+      if (!grouped[monthKey]) {
+        grouped[monthKey] = [];
+      }
+      grouped[monthKey].push(session);
+    });
+    
+    return Object.entries(grouped).sort((a, b) => 
+      new Date(b[1][0].game_date).getTime() - new Date(a[1][0].game_date).getTime()
+    );
+  }, [pastSessions, siteFilter, weaponFilter]);
 
   if (!user) {
     return (
@@ -115,11 +154,68 @@ const PlayerLog = () => {
                 </div>
               </Card>
             ) : (
-              <div className="grid gap-4">
-                {pastSessions.map((session) => (
-                  <GameSessionCard key={session.id} session={session} />
-                ))}
-              </div>
+              <>
+                {/* Filters */}
+                <Card className="p-4">
+                  <div className="flex items-center gap-4 flex-wrap">
+                    <div className="flex items-center gap-2">
+                      <Filter className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm font-medium">Filters:</span>
+                    </div>
+                    <Select value={siteFilter} onValueChange={setSiteFilter}>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="All Sites" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Sites</SelectItem>
+                        {uniqueSites.map(site => (
+                          <SelectItem key={site} value={site}>{site}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Select value={weaponFilter} onValueChange={setWeaponFilter}>
+                      <SelectTrigger className="w-[180px]">
+                        <SelectValue placeholder="All Weapons" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Weapons</SelectItem>
+                        {uniqueWeapons.map(weapon => (
+                          <SelectItem key={weapon} value={weapon}>{weapon}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {(siteFilter !== "all" || weaponFilter !== "all") && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => {
+                          setSiteFilter("all");
+                          setWeaponFilter("all");
+                        }}
+                      >
+                        Clear
+                      </Button>
+                    )}
+                  </div>
+                </Card>
+
+                {/* Grouped Sessions */}
+                <div className="space-y-6">
+                  {groupedPastSessions.map(([month, sessions]) => (
+                    <div key={month} className="space-y-3">
+                      <div className="flex items-center gap-3">
+                        <h3 className="text-lg font-semibold text-foreground">{month}</h3>
+                        <div className="h-px flex-1 bg-border" />
+                      </div>
+                      <div className="grid gap-4">
+                        {sessions.map((session) => (
+                          <GameSessionCard key={session.id} session={session} />
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
             )}
           </TabsContent>
         </Tabs>
