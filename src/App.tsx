@@ -16,6 +16,8 @@ import AddSite from "./pages/AddSite";
 import Tools from "./pages/Tools";
 import Profile from "./pages/Profile";
 import Operator from "./pages/Operator";
+import OperatorHub from "./pages/OperatorHub";
+import OperatorChat from "./pages/OperatorChat";
 import OperatorsPage from "./pages/Operators";
 import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
@@ -55,6 +57,8 @@ const App = () => (
             <Route path="/tools" element={<ProtectedRoute><Tools /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/operator" element={<ProtectedRoute><Operator /></ProtectedRoute>} />
+            <Route path="/operator/hub" element={<ProtectedRoute><OperatorHub /></ProtectedRoute>} />
+            <Route path="/operator/chat" element={<ProtectedRoute><OperatorChat /></ProtectedRoute>} />
             <Route path="/operators" element={<ProtectedRoute><OperatorsPage /></ProtectedRoute>} />
             <Route path="/arsenal" element={<ProtectedRoute><Arsenal /></ProtectedRoute>} />
             <Route path="/arsenal/:gunId/maintenance" element={<ProtectedRoute><GunMaintenance /></ProtectedRoute>} />
