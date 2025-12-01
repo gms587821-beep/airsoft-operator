@@ -1,9 +1,11 @@
-import { User, Settings, LogOut, Shield } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import { User, Settings, LogOut, Shield, Crown, Calendar } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import Navigation from "@/components/Navigation";
 import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
+import { useSubscription } from "@/hooks/useSubscription";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
@@ -11,11 +13,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const Profile = () => {
   const { user, signOut, loading: authLoading } = useAuth();
+  const { data: profile, isLoading: profileLoading } = useProfile();
+  const { startCheckout, manageSubscription } = useSubscription();
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<any>(null);
   const [loadoutsCount, setLoadoutsCount] = useState(0);
   const [gunsCount, setGunsCount] = useState(0);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -25,21 +27,12 @@ const Profile = () => {
 
   useEffect(() => {
     if (user) {
-      fetchProfileData();
+      fetchCounts();
     }
   }, [user]);
 
-  const fetchProfileData = async () => {
+  const fetchCounts = async () => {
     if (!user) return;
-    
-    setLoading(true);
-    
-    // Fetch profile
-    const { data: profileData } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", user.id)
-      .single();
     
     // Fetch loadouts count
     const { count: loadoutsCount } = await supabase
@@ -53,10 +46,8 @@ const Profile = () => {
       .select("*", { count: "exact", head: true })
       .eq("user_id", user.id);
     
-    setProfile(profileData);
     setLoadoutsCount(loadoutsCount || 0);
     setGunsCount(gunsCount || 0);
-    setLoading(false);
   };
 
   const handleSignOut = async () => {
@@ -75,7 +66,7 @@ const Profile = () => {
     { icon: Settings, label: "App Settings", action: () => {} },
   ];
 
-  if (authLoading || loading) {
+  if (authLoading || profileLoading) {
     return (
       <div className="min-h-screen bg-background pb-20">
         <div className="container mx-auto px-4 py-6 space-y-6">
@@ -116,10 +107,46 @@ const Profile = () => {
               </AvatarFallback>
             </Avatar>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">{displayName}</h1>
+              <div className="flex items-center gap-2 justify-center">
+                <h1 className="text-2xl font-bold text-foreground">{displayName}</h1>
+                {profile?.subscription_tier === 'premium' && (
+                  <Crown className="h-5 w-5 text-yellow-500" />
+                )}
+              </div>
               <p className="text-muted-foreground">Member since {memberSince}</p>
             </div>
           </div>
+        </Card>
+
+        {/* Subscription Status */}
+        <Card className={profile?.subscription_tier === 'premium' ? 'border-yellow-500/50 bg-yellow-500/5' : ''}>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium">
+                  {profile?.subscription_tier === 'premium' ? '⚡ Premium Account' : '📦 Standard Account'}
+                </p>
+                {profile?.subscription_tier === 'premium' && profile?.subscription_ends_at && (
+                  <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                    <Calendar className="h-3 w-3" />
+                    Renews {new Date(profile.subscription_ends_at).toLocaleDateString('en-GB')}
+                  </p>
+                )}
+                {profile?.subscription_tier === 'standard' && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Unlock unlimited loadouts, no marketplace fees & advanced diagnostics
+                  </p>
+                )}
+              </div>
+              <Button 
+                size="sm" 
+                onClick={profile?.subscription_tier === 'premium' ? manageSubscription : startCheckout}
+                variant={profile?.subscription_tier === 'premium' ? 'outline' : 'default'}
+              >
+                {profile?.subscription_tier === 'premium' ? 'Manage' : 'Upgrade'}
+              </Button>
+            </div>
+          </CardContent>
         </Card>
 
         {/* Stats */}
