@@ -641,6 +641,11 @@ export type Database = {
           id: string
           member_since: string | null
           primary_role: string | null
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          subscription_ends_at: string | null
+          subscription_status: string | null
+          subscription_tier: Database["public"]["Enums"]["subscription_tier"]
           updated_at: string | null
         }
         Insert: {
@@ -651,6 +656,11 @@ export type Database = {
           id: string
           member_since?: string | null
           primary_role?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_ends_at?: string | null
+          subscription_status?: string | null
+          subscription_tier?: Database["public"]["Enums"]["subscription_tier"]
           updated_at?: string | null
         }
         Update: {
@@ -661,6 +671,11 @@ export type Database = {
           id?: string
           member_since?: string | null
           primary_role?: string | null
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          subscription_ends_at?: string | null
+          subscription_status?: string | null
+          subscription_tier?: Database["public"]["Enums"]["subscription_tier"]
           updated_at?: string | null
         }
         Relationships: [
@@ -818,6 +833,7 @@ export type Database = {
         | "repair"
         | "upgrade"
         | "other"
+      subscription_tier: "standard" | "premium"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -954,6 +970,7 @@ export const Constants = {
         "upgrade",
         "other",
       ],
+      subscription_tier: ["standard", "premium"],
     },
   },
 } as const
