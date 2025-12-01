@@ -30,6 +30,7 @@ import PlayerLog from "./pages/PlayerLog";
 import Statistics from "./pages/Statistics";
 import LoadoutBuilder from "./pages/LoadoutBuilder";
 import LoadoutDetail from "./pages/LoadoutDetail";
+import Install from "./pages/Install";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,7 @@ const App = () => (
           <Routes>
             {/* Public routes */}
             <Route path="/auth" element={<Auth />} />
+            <Route path="/install" element={<Install />} />
             
             {/* Protected routes */}
             <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
