@@ -23,6 +23,9 @@ const MaintenanceDashboard = () => {
   const { data: profile } = useProfile();
   const { guns = [] } = useGuns();
   
+  const isStandardUser = profile?.subscription_tier === 'standard';
+  const maintenanceLimit = isStandardUser ? 10 : Infinity;
+  
   const operatorAdvice = activeOperator ? getOperatorAdviceForPage(
     "maintenance",
     profile || null,
@@ -121,7 +124,9 @@ const MaintenanceDashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{recentMaintenance.length}</div>
-              <p className="text-xs text-muted-foreground">Total logs</p>
+              <p className="text-xs text-muted-foreground">
+                {isStandardUser ? `(${recentMaintenance.length}/${maintenanceLimit} used)` : 'Total logs'}
+              </p>
             </CardContent>
           </Card>
         </div>
