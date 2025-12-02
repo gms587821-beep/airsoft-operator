@@ -149,6 +149,51 @@ const Profile = () => {
           </CardContent>
         </Card>
 
+        {/* Feature Comparison */}
+        <Card>
+          <CardContent className="p-4">
+            <h3 className="font-semibold text-sm mb-4">Account Features</h3>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-muted-foreground">Loadouts</span>
+                <span className="font-medium">
+                  {profile?.subscription_tier === 'premium' ? 'Unlimited' : 'Up to 3'}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-muted-foreground">Gun Registry</span>
+                <span className="font-medium">
+                  {profile?.subscription_tier === 'premium' ? 'Unlimited' : 'Up to 5'}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-muted-foreground">Marketplace Fee</span>
+                <span className="font-medium">
+                  {profile?.subscription_tier === 'premium' ? '3%' : '8%'}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-muted-foreground">Operator Diagnostics</span>
+                <span className="font-medium">
+                  {profile?.subscription_tier === 'premium' ? 'Advanced' : 'Basic'}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-muted-foreground">Maintenance Tracking</span>
+                <span className="font-medium">
+                  {profile?.subscription_tier === 'premium' ? 'Full History' : 'Limited'}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-muted-foreground">Ads</span>
+                <span className="font-medium">
+                  {profile?.subscription_tier === 'premium' ? 'None' : 'Standard'}
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4">
           {stats.map((stat, index) => (
