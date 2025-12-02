@@ -1,11 +1,21 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, ArrowLeft, ShoppingCart } from "lucide-react";
+import { Plus, ArrowLeft, ShoppingCart, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import Navigation from "@/components/Navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { usePlannedLoadouts } from "@/hooks/usePlannedLoadouts";
@@ -15,6 +25,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { AppLayout } from "@/components/AppLayout";
 import { OperatorBanner } from "@/components/OperatorBanner";
 import { getOperatorAdviceForPage } from "@/lib/operatorLogic";
+import { useSubscription } from "@/hooks/useSubscription";
 
 const LoadoutBuilder = () => {
   const navigate = useNavigate();
@@ -22,12 +33,18 @@ const LoadoutBuilder = () => {
   const { loadouts, isLoading, createLoadout, deleteLoadout } =
     usePlannedLoadouts();
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [newLoadout, setNewLoadout] = useState({
     name: "",
     description: "",
   });
   const { activeOperator } = useOperators();
   const { data: profile } = useProfile();
+  const { startCheckout } = useSubscription();
+  
+  const isStandardUser = profile?.subscription_tier === 'standard';
+  const loadoutLimit = isStandardUser ? 3 : Infinity;
+  const atLimit = loadouts.length >= loadoutLimit;
   
   const operatorAdvice = activeOperator && loadouts.length > 0 ? {
     message: "Need help optimizing this loadout? I can suggest improvements based on your play style.",
@@ -68,6 +85,19 @@ const LoadoutBuilder = () => {
     }
   };
 
+  const handleNewBuildClick = () => {
+    if (atLimit) {
+      setShowUpgradeDialog(true);
+    } else {
+      setShowCreateForm(true);
+    }
+  };
+
+  const handleUpgrade = () => {
+    setShowUpgradeDialog(false);
+    startCheckout();
+  };
+
   return (
     <AppLayout>
       <div className="space-y-6 py-2">
@@ -96,12 +126,14 @@ const LoadoutBuilder = () => {
               </h1>
               <p className="text-sm text-muted-foreground">
                 Configure your dream loadout and save it for later
+                {isStandardUser && ` (${loadouts.length}/${loadoutLimit} used)`}
               </p>
             </div>
           </div>
-          <Button onClick={() => setShowCreateForm(true)} className="gap-2">
+          <Button onClick={handleNewBuildClick} className="gap-2">
             <Plus className="h-4 w-4" />
             New Build
+            {atLimit && <Crown className="h-3 w-3 text-yellow-500" />}
           </Button>
         </div>
 
@@ -191,6 +223,51 @@ const LoadoutBuilder = () => {
             ))}
           </div>
         )}
+
+        {/* Upgrade Dialog */}
+        <AlertDialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle className="flex items-center gap-2">
+                <Crown className="h-5 w-5 text-yellow-500" />
+                Upgrade to Premium
+              </AlertDialogTitle>
+              <AlertDialogDescription className="space-y-3">
+                <p>
+                  You've reached the limit of {loadoutLimit} loadouts on the Standard plan.
+                </p>
+                <p className="font-medium text-foreground">
+                  Upgrade to Premium for:
+                </p>
+                <ul className="space-y-1 text-sm">
+                  <li className="flex items-center gap-2">
+                    <span className="text-yellow-500">✓</span>
+                    <span>Unlimited loadouts</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-yellow-500">✓</span>
+                    <span>Unlimited guns in registry</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-yellow-500">✓</span>
+                    <span>Lower marketplace fees (3% vs 8%)</span>
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span className="text-yellow-500">✓</span>
+                    <span>Advanced diagnostics & no ads</span>
+                  </li>
+                </ul>
+                <p className="text-sm font-medium">Only £5.99/month</p>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Maybe Later</AlertDialogCancel>
+              <AlertDialogAction onClick={handleUpgrade}>
+                Upgrade Now
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </AppLayout>
   );
