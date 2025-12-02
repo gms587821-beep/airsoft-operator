@@ -119,6 +119,17 @@ const Profile = () => {
         </Card>
 
         {/* Plan Comparison */}
+        <div className="mb-4">
+          <Button 
+            variant="outline" 
+            className="w-full border-yellow-500/50 text-yellow-500 hover:bg-yellow-500/10"
+            onClick={() => navigate("/premium")}
+          >
+            <Crown className="mr-2 h-4 w-4" />
+            View Complete Feature Comparison
+          </Button>
+        </div>
+        
         <div className="grid grid-cols-2 gap-4">
           {/* Standard Plan */}
           <Card className={profile?.subscription_tier === 'standard' ? 'border-primary' : ''}>
