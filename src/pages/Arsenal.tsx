@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Target, ArrowLeft } from "lucide-react";
+import { Plus, Target, ArrowLeft, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppLayout } from "@/components/AppLayout";
 import { useGuns, Gun } from "@/hooks/useGuns";
@@ -11,15 +11,32 @@ import { useProfile } from "@/hooks/useProfile";
 import { useAllMaintenance } from "@/hooks/useAllMaintenance";
 import { OperatorBanner } from "@/components/OperatorBanner";
 import { getOperatorAdviceForPage } from "@/lib/operatorLogic";
+import { useSubscription } from "@/hooks/useSubscription";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const Arsenal = () => {
   const navigate = useNavigate();
   const { guns, isLoading, addGun, updateGun, deleteGun } = useGuns();
   const [showForm, setShowForm] = useState(false);
   const [editingGun, setEditingGun] = useState<Gun | null>(null);
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const { activeOperator } = useOperators();
   const { data: profile } = useProfile();
   const { maintenanceLogs = [] } = useAllMaintenance();
+  const { startCheckout } = useSubscription();
+  
+  const isStandardUser = profile?.subscription_tier === 'standard';
+  const gunLimit = isStandardUser ? 5 : Infinity;
+  const atLimit = isStandardUser && (guns?.length || 0) >= gunLimit;
   
   const operatorAdvice = activeOperator ? getOperatorAdviceForPage(
     "arsenal",
@@ -91,11 +108,13 @@ const Arsenal = () => {
           <div className="flex items-center justify-between pt-2">
             <p className="text-sm text-muted-foreground">
               {guns?.length || 0} {guns?.length === 1 ? 'weapon' : 'weapons'} in your loadout
+              {isStandardUser && ` (${guns?.length || 0}/${gunLimit} used)`}
             </p>
             <Button
-              onClick={() => setShowForm(true)}
+              onClick={() => atLimit ? setShowUpgradeDialog(true) : setShowForm(true)}
               className="gap-2 bg-primary hover:bg-primary/90"
             >
+              {atLimit && <Crown className="w-4 h-4" />}
               <Plus className="w-5 h-5" />
               Add Gun
             </Button>
@@ -143,6 +162,38 @@ const Arsenal = () => {
         onSubmit={handleSubmit}
         initialData={editingGun}
       />
+
+      {/* Upgrade Dialog */}
+      <AlertDialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Crown className="w-5 h-5 text-primary" />
+              Upgrade to Premium
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-3 text-left pt-2">
+              <p>You've reached the gun limit for standard accounts (5 guns).</p>
+              <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+                <p className="font-semibold text-foreground">Premium Benefits:</p>
+                <ul className="space-y-1 text-sm">
+                  <li>✓ Unlimited guns in your arsenal</li>
+                  <li>✓ Unlimited loadouts</li>
+                  <li>✓ No marketplace fees (save 8%)</li>
+                  <li>✓ Advanced operator diagnostics</li>
+                  <li>✓ Priority support</li>
+                </ul>
+              </div>
+              <p className="text-sm font-semibold text-primary">Just £5.99/month</p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Maybe Later</AlertDialogCancel>
+            <AlertDialogAction onClick={startCheckout} className="bg-primary hover:bg-primary/90">
+              Upgrade Now
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </AppLayout>
   );
 };
