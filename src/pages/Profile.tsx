@@ -152,43 +152,50 @@ const Profile = () => {
         {/* Feature Comparison */}
         <Card>
           <CardContent className="p-4">
-            <h3 className="font-semibold text-sm mb-4">Account Features</h3>
+            <h3 className="font-semibold text-sm mb-4">Compare Plans</h3>
             <div className="space-y-3">
-              <div className="flex items-center justify-between text-xs">
+              {/* Header */}
+              <div className="grid grid-cols-3 gap-2 text-xs font-medium pb-2 border-b border-border">
+                <div></div>
+                <div className="text-center">Standard</div>
+                <div className="text-center text-yellow-500">Premium</div>
+              </div>
+              
+              {/* Features */}
+              <div className="grid grid-cols-3 gap-2 text-xs items-center">
                 <span className="text-muted-foreground">Loadouts</span>
-                <span className="font-medium">
-                  {profile?.subscription_tier === 'premium' ? 'Unlimited' : 'Up to 3'}
-                </span>
+                <span className="text-center">Up to 3</span>
+                <span className="text-center font-medium text-yellow-500">Unlimited</span>
               </div>
-              <div className="flex items-center justify-between text-xs">
+              <div className="grid grid-cols-3 gap-2 text-xs items-center">
                 <span className="text-muted-foreground">Gun Registry</span>
-                <span className="font-medium">
-                  {profile?.subscription_tier === 'premium' ? 'Unlimited' : 'Up to 5'}
-                </span>
+                <span className="text-center">Up to 5</span>
+                <span className="text-center font-medium text-yellow-500">Unlimited</span>
               </div>
-              <div className="flex items-center justify-between text-xs">
+              <div className="grid grid-cols-3 gap-2 text-xs items-center">
                 <span className="text-muted-foreground">Marketplace Fee</span>
-                <span className="font-medium">
-                  {profile?.subscription_tier === 'premium' ? '3%' : '8%'}
-                </span>
+                <span className="text-center">8%</span>
+                <span className="text-center font-medium text-yellow-500">3%</span>
               </div>
-              <div className="flex items-center justify-between text-xs">
+              <div className="grid grid-cols-3 gap-2 text-xs items-center">
                 <span className="text-muted-foreground">Operator Diagnostics</span>
-                <span className="font-medium">
-                  {profile?.subscription_tier === 'premium' ? 'Advanced' : 'Basic'}
-                </span>
+                <span className="text-center">Basic</span>
+                <span className="text-center font-medium text-yellow-500">Advanced</span>
               </div>
-              <div className="flex items-center justify-between text-xs">
+              <div className="grid grid-cols-3 gap-2 text-xs items-center">
                 <span className="text-muted-foreground">Maintenance Tracking</span>
-                <span className="font-medium">
-                  {profile?.subscription_tier === 'premium' ? 'Full History' : 'Limited'}
-                </span>
+                <span className="text-center">Limited</span>
+                <span className="text-center font-medium text-yellow-500">Full History</span>
               </div>
-              <div className="flex items-center justify-between text-xs">
+              <div className="grid grid-cols-3 gap-2 text-xs items-center">
                 <span className="text-muted-foreground">Ads</span>
-                <span className="font-medium">
-                  {profile?.subscription_tier === 'premium' ? 'None' : 'Standard'}
-                </span>
+                <span className="text-center">Yes</span>
+                <span className="text-center font-medium text-yellow-500">None</span>
+              </div>
+              <div className="grid grid-cols-3 gap-2 text-xs items-center">
+                <span className="text-muted-foreground">Operator Skins</span>
+                <span className="text-center">-</span>
+                <span className="text-center font-medium text-yellow-500">Exclusive</span>
               </div>
             </div>
           </CardContent>
