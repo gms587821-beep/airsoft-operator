@@ -31,6 +31,7 @@ import Statistics from "./pages/Statistics";
 import LoadoutBuilder from "./pages/LoadoutBuilder";
 import LoadoutDetail from "./pages/LoadoutDetail";
 import Install from "./pages/Install";
+import Premium from "./pages/Premium";
 
 const queryClient = new QueryClient();
 
@@ -58,6 +59,7 @@ const App = () => (
             <Route path="/sites/add" element={<ProtectedRoute><AddSite /></ProtectedRoute>} />
             <Route path="/tools" element={<ProtectedRoute><Tools /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="/premium" element={<ProtectedRoute><Premium /></ProtectedRoute>} />
             <Route path="/operator" element={<ProtectedRoute><Operator /></ProtectedRoute>} />
             <Route path="/operator/hub" element={<ProtectedRoute><OperatorHub /></ProtectedRoute>} />
             <Route path="/operator/chat" element={<ProtectedRoute><OperatorChat /></ProtectedRoute>} />
