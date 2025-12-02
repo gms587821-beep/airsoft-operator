@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, ArrowLeft, ShoppingCart, Crown } from "lucide-react";
+import { Plus, ArrowLeft, ShoppingCart, Crown, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -44,7 +44,10 @@ const LoadoutBuilder = () => {
   
   const isStandardUser = profile?.subscription_tier === 'standard';
   const loadoutLimit = isStandardUser ? 3 : Infinity;
-  const atLimit = loadouts.length >= loadoutLimit;
+  const currentCount = loadouts.length;
+  const atLimit = currentCount >= loadoutLimit;
+  const slotsRemaining = isStandardUser ? loadoutLimit - currentCount : Infinity;
+  const showProximityWarning = isStandardUser && slotsRemaining > 0 && slotsRemaining <= 1;
   
   const operatorAdvice = activeOperator && loadouts.length > 0 ? {
     message: "Need help optimizing this loadout? I can suggest improvements based on your play style.",
@@ -126,8 +129,17 @@ const LoadoutBuilder = () => {
               </h1>
               <p className="text-sm text-muted-foreground">
                 Configure your dream loadout and save it for later
-                {isStandardUser && ` (${loadouts.length}/${loadoutLimit} used)`}
+                {isStandardUser && ` (${currentCount}/${loadoutLimit} used)`}
               </p>
+              {showProximityWarning && (
+                <div className="flex items-center gap-2 mt-2 px-3 py-2 bg-amber-500/10 border border-amber-500/20 rounded-lg text-amber-500 text-sm">
+                  <AlertTriangle className="w-4 h-4" />
+                  <span>Only {slotsRemaining} slot{slotsRemaining === 1 ? '' : 's'} remaining!</span>
+                  <Button variant="link" size="sm" className="text-amber-500 p-0 h-auto" onClick={() => navigate('/premium')}>
+                    Upgrade
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
           <Button onClick={handleNewBuildClick} className="gap-2">

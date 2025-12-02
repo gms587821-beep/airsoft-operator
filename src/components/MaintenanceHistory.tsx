@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useGunMaintenance, MaintenanceLog } from "@/hooks/useGunMaintenance";
 import { MaintenanceForm } from "./MaintenanceForm";
-import { Plus, Wrench, Calendar, Trash2, Edit, AlertCircle, Crown } from "lucide-react";
+import { Plus, Wrench, Calendar, Trash2, Edit, AlertCircle, Crown, AlertTriangle } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { useAllMaintenance } from "@/hooks/useAllMaintenance";
 import { useSubscription } from "@/hooks/useSubscription";
@@ -37,7 +37,10 @@ export const MaintenanceHistory = ({ gunId, gunName }: MaintenanceHistoryProps) 
   
   const isStandardUser = profile?.subscription_tier === 'standard';
   const maintenanceLimit = isStandardUser ? 10 : Infinity;
-  const atLimit = isStandardUser && allLogs.length >= maintenanceLimit;
+  const currentCount = allLogs.length;
+  const atLimit = isStandardUser && currentCount >= maintenanceLimit;
+  const slotsRemaining = isStandardUser ? maintenanceLimit - currentCount : Infinity;
+  const showProximityWarning = isStandardUser && slotsRemaining > 0 && slotsRemaining <= 3;
 
   const handleEdit = (log: MaintenanceLog) => {
     setEditingLog(log);
@@ -79,6 +82,15 @@ export const MaintenanceHistory = ({ gunId, gunName }: MaintenanceHistoryProps) 
 
   return (
     <div className="space-y-6">
+      {/* Proximity Warning */}
+      {showProximityWarning && (
+        <div className="flex items-center gap-2 px-3 py-2 bg-amber-500/10 border border-amber-500/20 rounded-lg text-amber-500 text-sm">
+          <AlertTriangle className="w-4 h-4" />
+          <span>Only {slotsRemaining} log{slotsRemaining === 1 ? '' : 's'} remaining!</span>
+          <span className="text-muted-foreground">({currentCount}/{maintenanceLimit} used)</span>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
