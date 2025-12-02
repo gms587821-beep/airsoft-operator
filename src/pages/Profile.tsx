@@ -118,88 +118,121 @@ const Profile = () => {
           </div>
         </Card>
 
-        {/* Subscription Status */}
-        <Card className={profile?.subscription_tier === 'premium' ? 'border-yellow-500/50 bg-yellow-500/5' : ''}>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium">
-                  {profile?.subscription_tier === 'premium' ? '⚡ Premium Account' : '📦 Standard Account'}
-                </p>
+        {/* Plan Comparison */}
+        <div className="grid grid-cols-2 gap-4">
+          {/* Standard Plan */}
+          <Card className={profile?.subscription_tier === 'standard' ? 'border-primary' : ''}>
+            <CardContent className="p-4 flex flex-col h-full">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-3">
+                  <h3 className="font-semibold">Standard</h3>
+                  {profile?.subscription_tier === 'standard' && (
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-primary/20 text-primary">Current</span>
+                  )}
+                </div>
+                <p className="text-2xl font-bold mb-1">Free</p>
+                <p className="text-xs text-muted-foreground mb-4">Forever</p>
+                
+                <div className="space-y-2 text-xs">
+                  <div className="flex items-start gap-2">
+                    <span className="text-muted-foreground">•</span>
+                    <span>Up to 3 loadouts</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-muted-foreground">•</span>
+                    <span>Up to 5 guns in registry</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-muted-foreground">•</span>
+                    <span>8% marketplace fee</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-muted-foreground">•</span>
+                    <span>Basic diagnostics</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-muted-foreground">•</span>
+                    <span>Limited maintenance history</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-muted-foreground">•</span>
+                    <span>Ads included</span>
+                  </div>
+                </div>
+              </div>
+              
+              <Button 
+                className="w-full mt-4" 
+                variant={profile?.subscription_tier === 'standard' ? 'outline' : 'default'}
+                disabled={profile?.subscription_tier === 'standard'}
+              >
+                {profile?.subscription_tier === 'standard' ? 'Current Plan' : 'Downgrade'}
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Premium Plan */}
+          <Card className={profile?.subscription_tier === 'premium' ? 'border-yellow-500 bg-yellow-500/5' : 'border-yellow-500/50'}>
+            <CardContent className="p-4 flex flex-col h-full">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-3">
+                  <h3 className="font-semibold">Premium</h3>
+                  {profile?.subscription_tier === 'premium' && (
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-yellow-500/20 text-yellow-500">Current</span>
+                  )}
+                </div>
+                <p className="text-2xl font-bold mb-1">£5.99</p>
+                <p className="text-xs text-muted-foreground mb-1">per month</p>
                 {profile?.subscription_tier === 'premium' && profile?.subscription_ends_at && (
-                  <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                  <p className="text-xs text-muted-foreground mb-4 flex items-center gap-1">
                     <Calendar className="h-3 w-3" />
                     Renews {new Date(profile.subscription_ends_at).toLocaleDateString('en-GB')}
                   </p>
                 )}
-                {profile?.subscription_tier === 'standard' && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Unlock unlimited loadouts, no marketplace fees & advanced diagnostics
-                  </p>
-                )}
+                {profile?.subscription_tier !== 'premium' && <div className="mb-4"></div>}
+                
+                <div className="space-y-2 text-xs">
+                  <div className="flex items-start gap-2">
+                    <span className="text-yellow-500">✓</span>
+                    <span className="font-medium">Unlimited loadouts</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-yellow-500">✓</span>
+                    <span className="font-medium">Unlimited guns in registry</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-yellow-500">✓</span>
+                    <span className="font-medium">3% marketplace fee</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-yellow-500">✓</span>
+                    <span className="font-medium">Advanced diagnostics</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-yellow-500">✓</span>
+                    <span className="font-medium">Full maintenance history</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-yellow-500">✓</span>
+                    <span className="font-medium">No ads</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-yellow-500">✓</span>
+                    <span className="font-medium">Exclusive operator skins</span>
+                  </div>
+                </div>
               </div>
+              
               <Button 
-                size="sm" 
+                className="w-full mt-4" 
                 onClick={profile?.subscription_tier === 'premium' ? manageSubscription : startCheckout}
                 variant={profile?.subscription_tier === 'premium' ? 'outline' : 'default'}
               >
-                {profile?.subscription_tier === 'premium' ? 'Manage' : 'Upgrade'}
+                {profile?.subscription_tier === 'premium' ? 'Manage Subscription' : 'Upgrade to Premium'}
               </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Feature Comparison */}
-        <Card>
-          <CardContent className="p-4">
-            <h3 className="font-semibold text-sm mb-4">Compare Plans</h3>
-            <div className="space-y-3">
-              {/* Header */}
-              <div className="grid grid-cols-3 gap-2 text-xs font-medium pb-2 border-b border-border">
-                <div></div>
-                <div className="text-center">Standard</div>
-                <div className="text-center text-yellow-500">Premium</div>
-              </div>
-              
-              {/* Features */}
-              <div className="grid grid-cols-3 gap-2 text-xs items-center">
-                <span className="text-muted-foreground">Loadouts</span>
-                <span className="text-center">Up to 3</span>
-                <span className="text-center font-medium text-yellow-500">Unlimited</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2 text-xs items-center">
-                <span className="text-muted-foreground">Gun Registry</span>
-                <span className="text-center">Up to 5</span>
-                <span className="text-center font-medium text-yellow-500">Unlimited</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2 text-xs items-center">
-                <span className="text-muted-foreground">Marketplace Fee</span>
-                <span className="text-center">8%</span>
-                <span className="text-center font-medium text-yellow-500">3%</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2 text-xs items-center">
-                <span className="text-muted-foreground">Operator Diagnostics</span>
-                <span className="text-center">Basic</span>
-                <span className="text-center font-medium text-yellow-500">Advanced</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2 text-xs items-center">
-                <span className="text-muted-foreground">Maintenance Tracking</span>
-                <span className="text-center">Limited</span>
-                <span className="text-center font-medium text-yellow-500">Full History</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2 text-xs items-center">
-                <span className="text-muted-foreground">Ads</span>
-                <span className="text-center">Yes</span>
-                <span className="text-center font-medium text-yellow-500">None</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2 text-xs items-center">
-                <span className="text-muted-foreground">Operator Skins</span>
-                <span className="text-center">-</span>
-                <span className="text-center font-medium text-yellow-500">Exclusive</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4">
