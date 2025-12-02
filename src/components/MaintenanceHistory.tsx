@@ -5,7 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useGunMaintenance, MaintenanceLog } from "@/hooks/useGunMaintenance";
 import { MaintenanceForm } from "./MaintenanceForm";
-import { Plus, Wrench, Calendar, Trash2, Edit, AlertCircle } from "lucide-react";
+import { Plus, Wrench, Calendar, Trash2, Edit, AlertCircle, Crown } from "lucide-react";
+import { useProfile } from "@/hooks/useProfile";
+import { useAllMaintenance } from "@/hooks/useAllMaintenance";
+import { useSubscription } from "@/hooks/useSubscription";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,6 +30,14 @@ export const MaintenanceHistory = ({ gunId, gunName }: MaintenanceHistoryProps) 
   const [showForm, setShowForm] = useState(false);
   const [editingLog, setEditingLog] = useState<MaintenanceLog | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  const { data: profile } = useProfile();
+  const { maintenanceLogs: allLogs = [] } = useAllMaintenance();
+  const { startCheckout } = useSubscription();
+  
+  const isStandardUser = profile?.subscription_tier === 'standard';
+  const maintenanceLimit = isStandardUser ? 10 : Infinity;
+  const atLimit = isStandardUser && allLogs.length >= maintenanceLimit;
 
   const handleEdit = (log: MaintenanceLog) => {
     setEditingLog(log);
@@ -74,7 +85,8 @@ export const MaintenanceHistory = ({ gunId, gunName }: MaintenanceHistoryProps) 
           <h2 className="text-2xl font-bold text-foreground">Maintenance History</h2>
           <p className="text-muted-foreground mt-1">{gunName}</p>
         </div>
-        <Button onClick={() => setShowForm(true)} className="gap-2">
+        <Button onClick={() => atLimit ? setShowUpgradeDialog(true) : setShowForm(true)} className="gap-2">
+          {atLimit && <Crown className="w-4 h-4" />}
           <Plus className="w-4 h-4" />
           Add Log
         </Button>
@@ -110,7 +122,7 @@ export const MaintenanceHistory = ({ gunId, gunName }: MaintenanceHistoryProps) 
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Wrench className="w-16 h-16 text-muted-foreground/40 mb-4" />
             <p className="text-muted-foreground mb-4">No maintenance logs yet</p>
-            <Button onClick={() => setShowForm(true)} variant="outline">
+            <Button onClick={() => atLimit ? setShowUpgradeDialog(true) : setShowForm(true)} variant="outline">
               <Plus className="w-4 h-4 mr-2" />
               Add First Log
             </Button>
@@ -215,6 +227,39 @@ export const MaintenanceHistory = ({ gunId, gunName }: MaintenanceHistoryProps) 
               }}
             >
               Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Upgrade Dialog */}
+      <AlertDialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Crown className="w-5 h-5 text-primary" />
+              Upgrade to Premium
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-3 text-left pt-2">
+              <p>You've reached the maintenance log limit for standard accounts ({allLogs.length}/{maintenanceLimit} logs).</p>
+              <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+                <p className="font-semibold text-foreground">Premium Benefits:</p>
+                <ul className="space-y-1 text-sm">
+                  <li>✓ Unlimited maintenance logs</li>
+                  <li>✓ Unlimited guns in your arsenal</li>
+                  <li>✓ Unlimited loadouts</li>
+                  <li>✓ No marketplace fees (save 8%)</li>
+                  <li>✓ Advanced operator diagnostics</li>
+                  <li>✓ Priority support</li>
+                </ul>
+              </div>
+              <p className="text-sm font-semibold text-primary">Just £5.99/month</p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Maybe Later</AlertDialogCancel>
+            <AlertDialogAction onClick={startCheckout} className="bg-primary hover:bg-primary/90">
+              Upgrade Now
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
