@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Target, ArrowLeft, Crown } from "lucide-react";
+import { Plus, Target, ArrowLeft, Crown, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AppLayout } from "@/components/AppLayout";
 import { useGuns, Gun } from "@/hooks/useGuns";
@@ -36,7 +36,10 @@ const Arsenal = () => {
   
   const isStandardUser = profile?.subscription_tier === 'standard';
   const gunLimit = isStandardUser ? 5 : Infinity;
-  const atLimit = isStandardUser && (guns?.length || 0) >= gunLimit;
+  const currentCount = guns?.length || 0;
+  const atLimit = isStandardUser && currentCount >= gunLimit;
+  const slotsRemaining = isStandardUser ? gunLimit - currentCount : Infinity;
+  const showProximityWarning = isStandardUser && slotsRemaining > 0 && slotsRemaining <= 2;
   
   const operatorAdvice = activeOperator ? getOperatorAdviceForPage(
     "arsenal",
@@ -105,6 +108,15 @@ const Arsenal = () => {
           <p className="text-muted-foreground">
             Track all your guns, key details and performance here
           </p>
+          {showProximityWarning && (
+            <div className="flex items-center gap-2 mt-2 px-3 py-2 bg-amber-500/10 border border-amber-500/20 rounded-lg text-amber-500 text-sm">
+              <AlertTriangle className="w-4 h-4" />
+              <span>Only {slotsRemaining} slot{slotsRemaining === 1 ? '' : 's'} remaining!</span>
+              <Button variant="link" size="sm" className="text-amber-500 p-0 h-auto" onClick={() => navigate('/premium')}>
+                Upgrade
+              </Button>
+            </div>
+          )}
           <div className="flex items-center justify-between pt-2">
             <p className="text-sm text-muted-foreground">
               {guns?.length || 0} {guns?.length === 1 ? 'weapon' : 'weapons'} in your loadout
