@@ -32,6 +32,9 @@ import LoadoutBuilder from "./pages/LoadoutBuilder";
 import LoadoutDetail from "./pages/LoadoutDetail";
 import Install from "./pages/Install";
 import Premium from "./pages/Premium";
+import SafeZoneFeed from "./pages/SafeZoneFeed";
+import CreatePost from "./pages/CreatePost";
+import CommunityGuidelines from "./pages/CommunityGuidelines";
 
 const queryClient = new QueryClient();
 
@@ -72,6 +75,9 @@ const App = () => (
             <Route path="/statistics" element={<ProtectedRoute><Statistics /></ProtectedRoute>} />
             <Route path="/loadout-builder" element={<ProtectedRoute><LoadoutBuilder /></ProtectedRoute>} />
             <Route path="/loadout-builder/:id" element={<ProtectedRoute><LoadoutDetail /></ProtectedRoute>} />
+            <Route path="/feed" element={<ProtectedRoute><SafeZoneFeed /></ProtectedRoute>} />
+            <Route path="/feed/create" element={<ProtectedRoute><CreatePost /></ProtectedRoute>} />
+            <Route path="/community-guidelines" element={<ProtectedRoute><CommunityGuidelines /></ProtectedRoute>} />
             
             {/* Catch-all route */}
             <Route path="*" element={<NotFound />} />
