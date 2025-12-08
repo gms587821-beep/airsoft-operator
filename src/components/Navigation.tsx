@@ -4,6 +4,7 @@ import { NavLink } from "./NavLink";
 const Navigation = () => {
   const navItems = [
     { icon: Home, label: "Home", path: "/" },
+    { icon: Wrench, label: "Tools", path: "/tools" },
     { icon: MessageSquare, label: "Feed", path: "/feed" },
     { icon: MapPin, label: "Sites", path: "/sites" },
     { icon: ShoppingBag, label: "Market", path: "/marketplace" },
