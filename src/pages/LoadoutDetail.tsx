@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Plus, ShoppingBag, Edit2 } from "lucide-react";
+import { ArrowLeft, Plus, ShoppingBag, Edit2, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -142,10 +142,20 @@ const LoadoutDetail = () => {
               )}
             </div>
           </div>
-          <Button onClick={() => setShowItemForm(true)} className="gap-2 shrink-0">
-            <Plus className="h-4 w-4" />
-            Add Item
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => navigate(`/feed/create?type=build&loadoutId=${loadout.id}`)} 
+              className="gap-2"
+            >
+              <Share2 className="h-4 w-4" />
+              Share
+            </Button>
+            <Button onClick={() => setShowItemForm(true)} className="gap-2 shrink-0">
+              <Plus className="h-4 w-4" />
+              Add Item
+            </Button>
+          </div>
         </div>
 
         {/* Total Cost Card */}
