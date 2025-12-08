@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, MapPin, ExternalLink, Star, Heart, Calendar } from "lucide-react";
+import { ArrowLeft, MapPin, ExternalLink, Star, Heart, Calendar, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -143,29 +143,35 @@ const SiteDetail = () => {
           )}
 
           {/* Links */}
-          {(site.website_url || site.booking_url) && (
-            <div className="pt-4 border-t border-border flex gap-3">
-              {site.website_url && (
-                <Button
-                  variant="outline"
-                  className="flex-1"
-                  onClick={() => window.open(site.website_url, "_blank")}
-                >
-                  <ExternalLink className="w-4 h-4 mr-2" />
-                  Website
-                </Button>
-              )}
-              {site.booking_url && (
-                <Button
-                  className="flex-1"
-                  onClick={() => window.open(site.booking_url, "_blank")}
-                >
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Book Now
-                </Button>
-              )}
-            </div>
-          )}
+          <div className="pt-4 border-t border-border flex flex-wrap gap-3">
+            {site.website_url && (
+              <Button
+                variant="outline"
+                className="flex-1 min-w-[120px]"
+                onClick={() => window.open(site.website_url, "_blank")}
+              >
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Website
+              </Button>
+            )}
+            {site.booking_url && (
+              <Button
+                className="flex-1 min-w-[120px]"
+                onClick={() => window.open(site.booking_url, "_blank")}
+              >
+                <Calendar className="w-4 h-4 mr-2" />
+                Book Now
+              </Button>
+            )}
+            <Button
+              variant="secondary"
+              className="flex-1 min-w-[120px]"
+              onClick={() => navigate(`/feed/create?type=game_recap&siteId=${site.id}`)}
+            >
+              <Share2 className="w-4 h-4 mr-2" />
+              Share Post
+            </Button>
+          </div>
         </Card>
 
         {/* Detailed Ratings */}

@@ -1,10 +1,13 @@
-import { MapPin, Calendar, Ticket, DollarSign } from "lucide-react";
+import { MapPin, Calendar, Ticket, DollarSign, Share2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 
 interface GameSession {
   id: string;
+  site_id?: string | null;
   site_name: string;
   site_location: string | null;
   game_date: string;
@@ -23,6 +26,14 @@ interface GameSessionCardProps {
 }
 
 export const GameSessionCard = ({ session }: GameSessionCardProps) => {
+  const navigate = useNavigate();
+
+  const handleShare = () => {
+    const params = new URLSearchParams({ type: 'game_recap', sessionId: session.id });
+    if (session.site_id) params.set('siteId', session.site_id);
+    navigate(`/feed/create?${params.toString()}`);
+  };
+
   return (
     <Card className="p-6 bg-card border-border shadow-card hover:shadow-tactical transition-smooth">
       <div className="space-y-4">
@@ -105,6 +116,19 @@ export const GameSessionCard = ({ session }: GameSessionCardProps) => {
             <p className="text-sm text-muted-foreground">{session.notes}</p>
           </div>
         )}
+
+        {/* Share Button */}
+        <div className="pt-2 border-t border-border">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="w-full gap-2"
+            onClick={handleShare}
+          >
+            <Share2 className="h-4 w-4" />
+            Share as Post
+          </Button>
+        </div>
       </div>
     </Card>
   );
