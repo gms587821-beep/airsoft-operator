@@ -1,4 +1,4 @@
-import { User, Settings, LogOut, Shield, Crown, Calendar } from "lucide-react";
+import { User, Settings, LogOut, Shield, Crown, Calendar, Users } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -10,6 +10,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useFollowing, useFollowers } from "@/hooks/useFollows";
+import FollowListDialog from "@/components/social/FollowListDialog";
 
 const Profile = () => {
   const { user, signOut, loading: authLoading } = useAuth();
@@ -18,6 +20,11 @@ const Profile = () => {
   const navigate = useNavigate();
   const [loadoutsCount, setLoadoutsCount] = useState(0);
   const [gunsCount, setGunsCount] = useState(0);
+  const [showFollowers, setShowFollowers] = useState(false);
+  const [showFollowing, setShowFollowing] = useState(false);
+  
+  const { data: following = [] } = useFollowing();
+  const { data: followers = [] } = useFollowers(user?.id);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -114,6 +121,24 @@ const Profile = () => {
                 )}
               </div>
               <p className="text-muted-foreground">Member since {memberSince}</p>
+            </div>
+            
+            {/* Follower/Following Counts */}
+            <div className="flex gap-6 pt-2">
+              <button 
+                onClick={() => setShowFollowers(true)}
+                className="text-center hover:opacity-80 transition-opacity"
+              >
+                <div className="text-xl font-bold text-foreground">{followers.length}</div>
+                <div className="text-xs text-muted-foreground">Followers</div>
+              </button>
+              <button 
+                onClick={() => setShowFollowing(true)}
+                className="text-center hover:opacity-80 transition-opacity"
+              >
+                <div className="text-xl font-bold text-foreground">{following.length}</div>
+                <div className="text-xs text-muted-foreground">Following</div>
+              </button>
             </div>
           </div>
         </Card>
@@ -285,6 +310,20 @@ const Profile = () => {
       </div>
 
       <Navigation />
+      
+      {/* Follow List Dialogs */}
+      <FollowListDialog
+        open={showFollowers}
+        onOpenChange={setShowFollowers}
+        title="Followers"
+        userIds={followers.map(f => f.follower_id)}
+      />
+      <FollowListDialog
+        open={showFollowing}
+        onOpenChange={setShowFollowing}
+        title="Following"
+        userIds={following.map(f => f.following_id)}
+      />
     </div>
   );
 };
