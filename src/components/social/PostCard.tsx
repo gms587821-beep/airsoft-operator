@@ -3,8 +3,10 @@ import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Heart, MessageCircle, Bookmark, MapPin, Crosshair, Clock } from "lucide-react";
+import { Heart, MessageCircle, Bookmark, MapPin, Crosshair, Clock, UserPlus, UserMinus } from "lucide-react";
 import { PostWithDetails, useLikePost, useUnlikePost, useSavePost, useUnsavePost } from "@/hooks/usePosts";
+import { useIsFollowing, useFollowUser, useUnfollowUser } from "@/hooks/useFollows";
+import { useAuth } from "@/hooks/useAuth";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
 import { CommentsDrawer } from "./CommentsDrawer";
@@ -23,11 +25,15 @@ const postTypeConfig = {
 export const PostCard = ({ post }: PostCardProps) => {
   const [showComments, setShowComments] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const { user } = useAuth();
 
   const likePost = useLikePost();
   const unlikePost = useUnlikePost();
   const savePost = useSavePost();
   const unsavePost = useUnsavePost();
+  const followUser = useFollowUser();
+  const unfollowUser = useUnfollowUser();
+  const { data: isFollowing, isLoading: isFollowingLoading } = useIsFollowing(post.author_id);
 
   const handleLike = () => {
     if (post.is_liked) {
@@ -45,8 +51,18 @@ export const PostCard = ({ post }: PostCardProps) => {
     }
   };
 
+  const handleFollow = () => {
+    if (isFollowing) {
+      unfollowUser.mutate(post.author_id);
+    } else {
+      followUser.mutate(post.author_id);
+    }
+  };
+
   const isLiking = likePost.isPending || unlikePost.isPending;
   const isSaving = savePost.isPending || unsavePost.isPending;
+  const isFollowingPending = followUser.isPending || unfollowUser.isPending;
+  const showFollowButton = user && user.id !== post.author_id;
 
   const typeConfig = postTypeConfig[post.type];
   const shouldTruncate = post.body.length > 200 && !isExpanded;
@@ -64,7 +80,35 @@ export const PostCard = ({ post }: PostCardProps) => {
                 </AvatarFallback>
               </Avatar>
               <div>
-                <p className="font-medium text-foreground">{post.author_name}</p>
+                <div className="flex items-center gap-2">
+                  <p className="font-medium text-foreground">{post.author_name}</p>
+                  {showFollowButton && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleFollow}
+                      disabled={isFollowingPending || isFollowingLoading}
+                      className={cn(
+                        "h-6 px-2 text-xs",
+                        isFollowing 
+                          ? "text-muted-foreground hover:text-destructive" 
+                          : "text-primary hover:text-primary"
+                      )}
+                    >
+                      {isFollowing ? (
+                        <>
+                          <UserMinus className="h-3 w-3 mr-1" />
+                          Unfollow
+                        </>
+                      ) : (
+                        <>
+                          <UserPlus className="h-3 w-3 mr-1" />
+                          Follow
+                        </>
+                      )}
+                    </Button>
+                  )}
+                </div>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <Clock className="h-3 w-3" />
                   {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}

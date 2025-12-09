@@ -58,12 +58,49 @@ export const useFeedPosts = (feedType: FeedType = 'global', filters: FeedFilters
   return useQuery({
     queryKey: ['posts', feedType, filters, limit, offset, user?.id],
     queryFn: async () => {
+      // For network feed, get followed users first
+      let followedUserIds: string[] = [];
+      if (feedType === 'network' && user) {
+        const { data: follows } = await supabase
+          .from('user_follows')
+          .select('following_id')
+          .eq('follower_id', user.id);
+        followedUserIds = follows?.map(f => f.following_id) || [];
+      }
+
+      // For saved feed, get saved post IDs first
+      let savedPostIds: string[] = [];
+      if (feedType === 'saved' && user) {
+        const { data: saves } = await supabase
+          .from('post_saves')
+          .select('post_id')
+          .eq('user_id', user.id);
+        savedPostIds = saves?.map(s => s.post_id) || [];
+        
+        // If no saved posts, return empty array
+        if (savedPostIds.length === 0) {
+          return [];
+        }
+      }
+
       let query = supabase
         .from('posts')
         .select('*')
         .eq('is_public', true)
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1);
+
+      // Apply feed type filters
+      if (feedType === 'network' && followedUserIds.length > 0) {
+        query = query.in('author_id', followedUserIds);
+      } else if (feedType === 'network' && followedUserIds.length === 0) {
+        // No one followed, return empty
+        return [];
+      }
+
+      if (feedType === 'saved') {
+        query = query.in('id', savedPostIds);
+      }
 
       if (filters.type) {
         query = query.eq('type', filters.type);
