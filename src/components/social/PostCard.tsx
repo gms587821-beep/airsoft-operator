@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -74,14 +75,21 @@ export const PostCard = ({ post }: PostCardProps) => {
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-3">
-              <Avatar className="h-10 w-10 border border-border">
-                <AvatarFallback className="bg-muted text-muted-foreground text-sm">
-                  {post.author_name?.slice(0, 2).toUpperCase() || 'OP'}
-                </AvatarFallback>
-              </Avatar>
+              <Link to={`/user/${post.author_id}`}>
+                <Avatar className="h-10 w-10 border border-border hover:border-primary transition-colors">
+                  <AvatarFallback className="bg-muted text-muted-foreground text-sm">
+                    {post.author_name?.slice(0, 2).toUpperCase() || 'OP'}
+                  </AvatarFallback>
+                </Avatar>
+              </Link>
               <div>
                 <div className="flex items-center gap-2">
-                  <p className="font-medium text-foreground">{post.author_name}</p>
+                  <Link 
+                    to={`/user/${post.author_id}`}
+                    className="font-medium text-foreground hover:text-primary transition-colors"
+                  >
+                    {post.author_name}
+                  </Link>
                   {showFollowButton && (
                     <Button
                       variant="ghost"

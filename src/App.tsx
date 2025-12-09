@@ -35,6 +35,7 @@ import Premium from "./pages/Premium";
 import SafeZoneFeed from "./pages/SafeZoneFeed";
 import CreatePost from "./pages/CreatePost";
 import CommunityGuidelines from "./pages/CommunityGuidelines";
+import UserProfile from "./pages/UserProfile";
 
 const queryClient = new QueryClient();
 
@@ -78,6 +79,7 @@ const App = () => (
             <Route path="/feed" element={<ProtectedRoute><SafeZoneFeed /></ProtectedRoute>} />
             <Route path="/feed/create" element={<ProtectedRoute><CreatePost /></ProtectedRoute>} />
             <Route path="/community-guidelines" element={<ProtectedRoute><CommunityGuidelines /></ProtectedRoute>} />
+            <Route path="/user/:userId" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
             
             {/* Catch-all route */}
             <Route path="*" element={<NotFound />} />
