@@ -70,11 +70,13 @@ const SafeZoneFeed = () => {
           </TabsContent>
 
           <TabsContent value="network" className="mt-4 space-y-4">
-            <div className="text-center py-8 text-muted-foreground">
-              <Users className="h-12 w-12 mx-auto mb-3 opacity-50" />
-              <p className="font-medium">Network feed coming soon</p>
-              <p className="text-sm">Follow other operators to see their posts here</p>
-            </div>
+            <FeedContent 
+              posts={posts} 
+              isLoading={isLoading} 
+              error={error} 
+              emptyMessage="No posts from your network yet"
+              emptyDescription="Follow other operators to see their posts here"
+            />
           </TabsContent>
 
           <TabsContent value="saved" className="mt-4 space-y-4">
@@ -91,9 +93,10 @@ interface FeedContentProps {
   isLoading: boolean;
   error: Error | null;
   emptyMessage?: string;
+  emptyDescription?: string;
 }
 
-const FeedContent = ({ posts, isLoading, error, emptyMessage = "No posts yet" }: FeedContentProps) => {
+const FeedContent = ({ posts, isLoading, error, emptyMessage = "No posts yet", emptyDescription = "Be the first to share something with the community" }: FeedContentProps) => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -120,7 +123,7 @@ const FeedContent = ({ posts, isLoading, error, emptyMessage = "No posts yet" }:
       <div className="text-center py-12 text-muted-foreground">
         <Globe className="h-12 w-12 mx-auto mb-3 opacity-50" />
         <p className="font-medium">{emptyMessage}</p>
-        <p className="text-sm mb-4">Be the first to share something with the community</p>
+        <p className="text-sm mb-4">{emptyDescription}</p>
         {user && (
           <Button onClick={() => navigate('/feed/create')} variant="outline" size="sm">
             <Plus className="h-4 w-4 mr-2" />
